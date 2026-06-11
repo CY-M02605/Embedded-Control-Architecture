@@ -1,0 +1,29 @@
+# Build folders
+build/
+*/build/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Visual Studio / MSVC
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.obj
+*.exe
+*.pdb
+*.ilk
+
+# VS Code
+.vscode/*
+!.vscode/c_cpp_properties.json
+!.vscode/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
