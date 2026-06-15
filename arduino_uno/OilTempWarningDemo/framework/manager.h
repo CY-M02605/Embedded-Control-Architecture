@@ -1,7 +1,7 @@
 /**
  * @file manager.h
- * @brief Manager for arduino_uno in framework
- * @date 11.06 2026
+ * @brief Declares the Manager for Arduino UNO.
+ * @date 2026-06-11
  */
 
 #ifndef MANAGER_H
@@ -14,7 +14,7 @@ class Manager {
     public:
         Manager() : count_(0) {}
 
-        void RegisterModule(ModuleInterface* module) {
+        void RegisterModule(ModuleInterface& module) {
             if (count_ < MAX_MODULES) {
                 modules_[count_] = &module;
                 count_++;
@@ -22,7 +22,7 @@ class Manager {
         }
 
         void UpdateAll() {
-            for (int i = 0; i < MAX_MODULES; ++i) {
+            for (int i = 0; i < count_; ++i) {
                 modules_[i]->Update();
             }
         }

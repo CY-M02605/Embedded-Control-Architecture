@@ -25,7 +25,7 @@ class IncrementTimer {
             previous_ms_(0),
             initialized_(false) {}
 
-        bool IsExpired() {
+        bool IsExpired(unsigned long current_ms) {
             unsigned long current_ms = millis();
 
             if (!initialized_) {

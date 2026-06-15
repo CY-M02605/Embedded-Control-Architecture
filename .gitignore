@@ -5,6 +5,7 @@ build/
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt
+CMakeLits.txt
 cmake_install.cmake
 Makefile
 

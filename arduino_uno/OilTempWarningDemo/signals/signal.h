@@ -1,7 +1,7 @@
 /**
  * @file signal.h
- * @brief Signal for arduino_uno in signals
- * @date 11.06.2026
+ * @brief Declares the Signal for Arduino UNO.
+ * @date 2026-06-11
  */
 
 #ifndef SIGNAL_H

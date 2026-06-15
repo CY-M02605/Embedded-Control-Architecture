@@ -1,7 +1,7 @@
 /**
  * @file hysteresis.h
- * @brief Hysteresis for arduino_uno in utility
- * @date 11.06.2026
+ * @brief Declares the Hysteresis for Arduino UNO.
+ * @date 2026-06-11
  */
 
 #ifndef HYSTERESIS_H
