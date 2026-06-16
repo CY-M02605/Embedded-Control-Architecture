@@ -14,7 +14,8 @@ OilTempWarning::OilTempWarning(
     framework::Manager& manager
 ):config_(config),
 oil_temp_(oil_temp),
-warning_output_(false, signals::ValidityStatus::INVALID){
+warning_output_(false, signals::ValidityStatus::INVALID),
+hysteresis_(config.hysteresis_config){
     manager.RegisterModule(*this);
 }
 
@@ -27,8 +28,10 @@ void OilTempWarning::Update() {
         return;
     }
 
-    const bool warning_flag = 
-        oil_temp_.GetValue() >= config_.temp_threshold;
+    bool warning_flag = hysteresis_.Update(oil_temp_.GetValue());
+
+    // const bool warning_flag = 
+    //     oil_temp_.GetValue() >= config_.high_threshold;
     
     warning_output_.Set(
         warning_flag,

@@ -10,8 +10,9 @@ constexpr int WARNING_LED_PIN = LED_BUILTIN;
 
 // Demo configuration
 constexpr float MAX_SIMULATED_TEMP_C = 120.0f;
-constexpr float WARNING_THRESHOLD_C = 95.0f;
 constexpr unsigned long CONTROL_INTERVAL_MS = 100UL;
+constexpr float WARNING_LOW_THRESHOLD = 90.0f;
+constexpr float WARNING_HIGH_THRESHOLD = 95.0f;
 
 // Framework object
 framework::Manager manager;
@@ -22,9 +23,15 @@ signals::FloatSignal oil_temp_signal(
     signals::ValidityStatus::INVALID
 );
 
+// Utility configuration
+const utility::Hysteresis::Config hysteresis_config {
+    WARNING_LOW_THRESHOLD,
+    WARNING_HIGH_THRESHOLD
+};
+
 // Module configuration
 const modules::OilTempWarning::Config oil_temp_warning_config{
-    WARNING_THRESHOLD_C
+    hysteresis_config
 };
 
 // Module object

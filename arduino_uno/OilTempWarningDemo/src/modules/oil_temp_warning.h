@@ -11,15 +11,18 @@
 #include "../framework/module_interface.h"
 #include "../signals/signal.h"
 
+#include "../utility/hysteresis.h"
+// #include "../utility/increment_timer.h"
+
 namespace modules {
 class OilTempWarning: public framework::ModuleInterface {
     public:
         struct Config {
-            float temp_threshold;
+            utility::Hysteresis::Config hysteresis_config;
         };
 
         explicit OilTempWarning(
-            const modules::OilTempWarning::Config config,
+            modules::OilTempWarning::Config config,
             const signals::FloatSignal& oil_temp,
             framework::Manager& manager
         );
@@ -32,6 +35,8 @@ class OilTempWarning: public framework::ModuleInterface {
         const modules::OilTempWarning::Config config_;
         const signals::FloatSignal& oil_temp_;
         signals::BoolSignal warning_output_;
+
+        utility::Hysteresis hysteresis_;
 
 };
 }
