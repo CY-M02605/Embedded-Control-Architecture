@@ -15,12 +15,17 @@ OilTempWarning::OilTempWarning(
 ):config_(config),
 oil_temp_(oil_temp),
 warning_output_(false, signals::ValidityStatus::INVALID),
-hysteresis_(config.hysteresis_config){
+hysteresis_({
+    config.low_warning_temp,
+    config.high_warning_temp
+}){
     manager.RegisterModule(*this);
 }
 
 void OilTempWarning::Update() {
     if (!oil_temp_.IsValid()) {
+        hysteresis_.Reset();
+
         warning_output_.Set(
             false,
             signals::ValidityStatus::INVALID

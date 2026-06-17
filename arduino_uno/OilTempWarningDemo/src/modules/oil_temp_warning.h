@@ -18,7 +18,9 @@ namespace modules {
 class OilTempWarning: public framework::ModuleInterface {
     public:
         struct Config {
-            utility::Hysteresis::Config hysteresis_config;
+            float low_warning_temp;
+            float high_warning_temp;
+            // utility::Hysteresis::Config hysteresis_config;
         };
 
         explicit OilTempWarning(
