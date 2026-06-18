@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/modules/gear_display_facade/include",
+        "${workspaceFolder}/modules/hydraulic_oil_warning/include",
+        "${workspaceFolder}/modules/instantiation_practice/include",
+        "${workspaceFolder}/modules/wl_cooling_fan_control/include",
+        "${workspaceFolder}/modules/wl_vehicle_speed/include",
+
+        "${workspaceFolder}/framework",
+        "${workspaceFolder}/signals",
+        "${workspaceFolder}/assembly",
+        "${workspaceFolder}/utility"
+      ],
+      "defines": [],
+      "compilerPath": "cl.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-msvc-x64"
+    }
+  ],
+  "version": 4
+}
