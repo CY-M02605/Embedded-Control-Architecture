@@ -14,8 +14,8 @@ namespace gear_display_facade {
         framework::Manager& manager
     ):ac_gear_position_signal_(ac_gear_position_signal),
     ac_is_eco_mode_signal_(ac_is_eco_mode_signal),
-    gear_position_output_(NEUTRAL, signals::VALID),
-    drive_mode_output_(POWER, signals::VALID){
+    gear_position_output_(NEUTRAL, signals::ValidityStatus::VALID),
+    drive_mode_output_(POWER, signals::ValidityStatus::VALID){
     manager.RegisterModule(*this);
     }
 
@@ -33,8 +33,8 @@ namespace gear_display_facade {
     }
 
     void GearDisplayFacade::UpdateGearPosition() {
-        if (ac_gear_position_signal_.GetValidity() != signals::VALID) {
-            gear_position_output_.Set(NEUTRAL, signals::INVALID);
+        if (ac_gear_position_signal_.GetValidity() != signals::ValidityStatus::VALID) {
+            gear_position_output_.Set(NEUTRAL, signals::ValidityStatus::INVALID);
             return;
         }
 
@@ -71,8 +71,8 @@ namespace gear_display_facade {
     }
 
     void GearDisplayFacade::UpdateDriveMode() {
-        if (ac_is_eco_mode_signal_.GetValidity() != signals::VALID) {
-            drive_mode_output_.Set(POWER, signals::INVALID);
+        if (ac_is_eco_mode_signal_.GetValidity() != signals::ValidityStatus::VALID) {
+            drive_mode_output_.Set(POWER, signals::ValidityStatus::INVALID);
             return;
         }
 

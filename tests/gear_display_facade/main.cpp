@@ -34,15 +34,15 @@ const char* DriveModeToStr (DriveMode mode) {
     }
 }
 
-const char* ValidityToStr (signals::SignalValidity validation) {
-    return (validation == signals::VALID? "VALID" : "INVALID"); 
+const char* ValidityToStr (signals::ValidityStatus validation) {
+    return (validation == signals::ValidityStatus::VALID? "VALID" : "INVALID"); 
 }
 
 void CheckGearPosition(
     const char* test_name,
     const gear_display_facade::GearPositionSignal& actual,
     GearPosition expected_value,
-    signals::SignalValidity expected_validity) {
+    signals::ValidityStatus expected_validity) {
         bool result = (actual.GetValue() == expected_value 
                     && actual.GetValidity() == expected_validity);
         const char* pass = result? "PASS" : "FAIL";
@@ -60,7 +60,7 @@ void CheckDriveMode(
     const char* test_name,
     const gear_display_facade::DriveModeSignal& actual,
     DriveMode expected_value,
-    signals::SignalValidity expected_validity) {
+    signals::ValidityStatus expected_validity) {
         bool result = (actual.GetValue() == expected_value 
                     && actual.GetValidity() == expected_validity);
         const char* pass = result? "PASS" : "FAIL";
@@ -82,8 +82,8 @@ int main() {
     framework::Manager manager;
 
     // 2、Create raw input signals
-    gear_display_facade::AcGearPositionSignal ac_gear_position_signal(0, signals::VALID);
-    gear_display_facade::AcIsEcoModeSignal ac_is_eco_mode_signal(false, signals::VALID);
+    gear_display_facade::AcGearPositionSignal ac_gear_position_signal(0, signals::ValidityStatus::VALID);
+    gear_display_facade::AcIsEcoModeSignal ac_is_eco_mode_signal(false, signals::ValidityStatus::VALID);
 
     // 3、Create GearDisplayFacade
     gear_display_facade::GearDisplayFacade Facade(
@@ -95,26 +95,26 @@ int main() {
     // 4、Set raw input signal
     struct GearInputs {
         int raw_gear;
-        signals::SignalValidity input_validity;
+        signals::ValidityStatus input_validity;
         GearPosition expected_position;
-        signals::SignalValidity expected_validation;
+        signals::ValidityStatus expected_validation;
     };
 
     GearInputs GearInputsArray[] = {
-        {0, signals::VALID, NEUTRAL, signals::VALID}, 
-        {1, signals::VALID, FORWARD_1, signals::VALID},
-        {2, signals::VALID, FORWARD_2, signals::VALID},
-        {3, signals::VALID, FORWARD_3, signals::VALID},
-        {-1, signals::VALID, REVERSE_1, signals::VALID},
-        {-2, signals::VALID, REVERSE_2, signals::VALID},
-        {99, signals::VALID, NEUTRAL, signals::VALID},
-        {0, signals::INVALID, NEUTRAL, signals::INVALID}, 
-        {1, signals::INVALID, NEUTRAL, signals::INVALID},
-        {2, signals::INVALID, NEUTRAL, signals::INVALID},
-        {3, signals::INVALID, NEUTRAL, signals::INVALID},
-        {-1, signals::INVALID, NEUTRAL, signals::INVALID},
-        {-2, signals::INVALID, NEUTRAL, signals::INVALID},
-        {99, signals::INVALID, NEUTRAL, signals::INVALID}
+        {0, signals::ValidityStatus::VALID, NEUTRAL, signals::ValidityStatus::VALID}, 
+        {1, signals::ValidityStatus::VALID, FORWARD_1, signals::ValidityStatus::VALID},
+        {2, signals::ValidityStatus::VALID, FORWARD_2, signals::ValidityStatus::VALID},
+        {3, signals::ValidityStatus::VALID, FORWARD_3, signals::ValidityStatus::VALID},
+        {-1, signals::ValidityStatus::VALID, REVERSE_1, signals::ValidityStatus::VALID},
+        {-2, signals::ValidityStatus::VALID, REVERSE_2, signals::ValidityStatus::VALID},
+        {99, signals::ValidityStatus::VALID, NEUTRAL, signals::ValidityStatus::VALID},
+        {0, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID}, 
+        {1, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID},
+        {2, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID},
+        {3, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID},
+        {-1, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID},
+        {-2, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID},
+        {99, signals::ValidityStatus::INVALID, NEUTRAL, signals::ValidityStatus::INVALID}
     };
     
     int gearArrayLength = sizeof(GearInputsArray) / sizeof(GearInputs);
@@ -137,23 +137,23 @@ int main() {
 
     struct ModeInputs {
         bool raw_mode;
-        signals::SignalValidity input_validity;
+        signals::ValidityStatus input_validity;
         DriveMode expected_mode;
-        signals::SignalValidity expected_validation;
+        signals::ValidityStatus expected_validation;
     };
 
     ModeInputs ModeInputsArray[] = {
-        {false, signals::VALID, POWER, signals::VALID}, 
-        {true, signals::VALID, ECO, signals::VALID},
-        {false, signals::INVALID, POWER, signals::INVALID}, 
-        {true, signals::INVALID, POWER, signals::INVALID},
+        {false, signals::ValidityStatus::VALID, POWER, signals::ValidityStatus::VALID}, 
+        {true, signals::ValidityStatus::VALID, ECO, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::INVALID, POWER, signals::ValidityStatus::INVALID}, 
+        {true, signals::ValidityStatus::INVALID, POWER, signals::ValidityStatus::INVALID},
     };
 
     int modeArrayLength = sizeof(ModeInputsArray) / sizeof(ModeInputs);
 
     std::cout << "------------- Drive Mode Test ------------" << std::endl;
 
-    ac_gear_position_signal.Set(0, signals::VALID);
+    ac_gear_position_signal.Set(0, signals::ValidityStatus::VALID);
 
     for (int j = 0; j < modeArrayLength; ++j) {
         ac_is_eco_mode_signal.Set(
