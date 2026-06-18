@@ -8,9 +8,9 @@
  */
 
 // Do not get any spaces in front of #include
-#include "framework/manager.h"
-#include "framework/module_interface.h"
-#include "signals/signal.h"
+#include "manager.h"
+#include "module_interface.h"
+#include "signal.h"
 #include "gear_types.h"
 
  namespace gear_display_facade {

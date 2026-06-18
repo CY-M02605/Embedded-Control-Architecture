@@ -6,10 +6,11 @@
 
 #include <iostream>
 
-#include "framework/manager.h"
-#include "framework/module_interface.h"
+#include "manager.h"
+#include "module_interface.h"
 
-#include "signals/signal.h"
+#include "signal.h"
+
 #include "gear_display_facade.h"
 
 #include "gear_types.h"

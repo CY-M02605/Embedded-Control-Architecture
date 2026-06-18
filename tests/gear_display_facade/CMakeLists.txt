@@ -11,6 +11,7 @@ add_executable(gear_display_facade
 
 target_include_directories(gear_display_facade PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../modules/gear_display_facade/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../..
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../framework
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../signals
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../utility
 )
