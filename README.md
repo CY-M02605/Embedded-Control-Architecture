@@ -56,11 +56,13 @@ Embedded-Control-Architecture/
 │   └── increment_timer.h
 │
 ├── tests/
-│   ├── gear_display_facade/
-│   ├── hydraulic_oil_warning/
-│   ├── instantiation_practice/
-│   ├── wl_cooling_fan_control/
-│   └── wl_vehicle_speed/
+│   └── module
+│           ├── gear_display_facade/
+│       ├── hydraulic_oil_warning/
+│       ├── instantiation_practice/
+│       ├── wl_cooling_fan_control/
+│       └── wl_vehicle_speed/
+│      └── unit
 │
 └── arduino_uno/
     └── OilTempWarningDemo/
@@ -71,7 +73,10 @@ Embedded-Control-Architecture/
             │   └── module_interface.h
             ├── modules/
             │   ├── oil_temp_warning.h
-            │   └── oil_temp_warning.cpp
+            │   ├── oil_temp_warning.cpp
+	    │   ├──  fan_cooling_control.h
+	    │      ├──  fan_cooling_control.cpp
+	    │
             ├── signals/
             │   └── signal.h
             └── utility/
@@ -519,6 +524,10 @@ The purpose is to practice:
 * embedded debugging
 
 ---
+
+## Troubleshooting
+
+See [Troubleshooting Notes](docs/troubleshooting.md).
 
 ## License
 
