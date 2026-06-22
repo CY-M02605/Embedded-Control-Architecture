@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # src directories in Arduino project
 set(PROJECT_SOURCE_DIR
-    ${CMAKE_CURRENT_SOURCE_DIR}/../Arduino_project/OilTempWarningDemo/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Arduino_project/OilTempWarningDemo/src
 ) 
 
 # start CTest
