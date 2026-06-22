@@ -10,6 +10,8 @@
         "${workspaceFolder}/modules/wl_cooling_fan_control/include",
         "${workspaceFolder}/modules/wl_vehicle_speed/include",
 
+        "${workspaceFolder}/Arduino_project/OilTempWarningDemo/src",
+
         "${workspaceFolder}/framework",
         "${workspaceFolder}/signals",
         "${workspaceFolder}/assembly",
