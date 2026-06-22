@@ -30,3 +30,21 @@ add_test(
     NAME HysteresisTest
     COMMAND test_hysteresis
 )
+
+
+# ======================================================================
+# 2、 increment_timer unit test part
+# ======================================================================
+
+add_executable(test_increment_timer
+    test_increment_timer.cpp
+)
+
+target_include_directories(test_increment_timer PRIVATE
+    ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME IncrementTimerTest
+    COMMAND test_increment_time
+)
