@@ -7,8 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # src directories in Arduino project
-set(PROJECT_SOURCE_DIR
+set(ARDUINO_PROJECT_SOURCE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Arduino_project/OilTempWarningDemo/src
+) 
+
+set(PC_SOURCE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/../..
 ) 
 
 # start CTest
@@ -23,14 +27,13 @@ add_executable(test_hysteresis
 )
 
 target_include_directories(test_hysteresis PRIVATE
-    ${PROJECT_SOURCE_DIR}
+    ${ARDUINO_PROJECT_SOURCE_DIR}
 )
 
 add_test(
     NAME HysteresisTest
     COMMAND test_hysteresis
 )
-
 
 # ======================================================================
 # 2、 increment_timer unit test part
@@ -41,10 +44,10 @@ add_executable(test_increment_timer
 )
 
 target_include_directories(test_increment_timer PRIVATE
-    ${PROJECT_SOURCE_DIR}/../../utility
+    ${PC_SOURCE_DIR}/utility
 )
 
 add_test(
     NAME IncrementTimerTest
-    COMMAND test_increment_time
+    COMMAND test_increment_timer
 )
