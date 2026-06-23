@@ -493,6 +493,19 @@ Then:
 
 ---
 
+## unit test
+
+cmake -S .\tests\unit -B .\build\tests\unit
+cmake --build .\build\tests\unit --config Debug
+ctest --test-dir .\build\tests\unit -C Debug --output-on-failure
+    explaination: 
+     ctest: operater test
+     --test-dir: find the location of test
+     -C Debug: decide which version to operater test
+     --output-on-failure: show failure details
+
+---
+
 ## Design Notes
 
 ### Why `OilTempWarning` does not read A0 directly
