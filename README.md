@@ -37,16 +37,50 @@ Embedded-Control-Architecture/
 │   ├── instantiation.h
 │   └── instantiation_practice.h
 │
+├── docs/
+│   ├── circuit-notes.md
+│   └── troubleshooting.md
+│
+├── examples/
+│   ├── 
+│   └── 
+│
 ├── framework/
 │   ├── manager.h
 │   └── module_interface.h
 │
 ├── modules/
 │   ├── gear_display_facade/
+│   │   ├── include/
+│   │   │   ├── gear_display_facade.h
+│   │   │   └── gear_types.h
+│   │   └── src/
+│   │       └── gear_display_facade.cc
 │   ├── hydraulic_oil_warning/
+│   │   ├── include/
+│   │   │   └── hydraulic_oil_warning.h
+│   │   └── src/
+│   │       └── hydraulic_oil_warning.cc
 │   ├── instantiation_practice/
+│   │   ├── include/
+│   │   │   ├── instantiation_practice.h
+│   │   │   └── speed_monitor.h
+│   │   └── src/
 │   ├── wl_cooling_fan_control/
-│   └── wl_vehicle_speed/
+│   │   ├── include/
+│   │   │   ├── wl_cooling_fan_control.h
+│   │   │   └── wlCoolingFanControl.h
+│   │   └── src/
+│   │       ├── wl_cooling_fan_control.cc
+│   │       └── wlCoolingFanControl.cc
+│   ├── wl_vehicle_speed/
+│   │   ├── include/
+│   │   │   ├── wl_vehicle_speed.h
+│   │   │   └── wlVehicleSpeed.h
+│   │   └── src/
+│   │       ├── wl_vehicle_speed.cc
+│   │       └── wlVehicleSpeed.cc
+│   ├── 
 │
 ├── signals/
 │   └── signal.h
@@ -56,33 +90,53 @@ Embedded-Control-Architecture/
 │   └── increment_timer.h
 │
 ├── tests/
-│   ├── module
+│   ├── module/
 │   │   ├── gear_display_facade/
+│   │   │   ├── CMakeLists.txt
+│   │   │   └── main.cpp
 │   │   ├── hydraulic_oil_warning/
+│   │   │   ├── CMakeLists.txt
+│   │   │   └── main.cpp
 │   │   ├── instantiation_practice/
+│   │   │   ├── CMakeLists.txt
+│   │   │   └── main.cpp
 │   │   ├── wl_cooling_fan_control/
+│   │   │   ├── CMakeLists.txt
+│   │   │   └── main.cpp
 │   │   └── wl_vehicle_speed/
-│   └── unit
-│       ├── test_hysteresis.cpp
+│   │   │   ├── CMakeLists.txt
+│   │   │   └── main.cpp
+│   └── unit/
+│       ├── CMakeLists.txt
+│       └── test_hysteresis.cpp
 │
-└── arduino_uno/
-    └── OilTempWarningDemo/
-        ├── OilTempWarningDemo.ino
-        └── src/
-            ├── framework/
-            │   ├── manager.h
-            │   └── module_interface.h
-            ├── modules/
-            │   ├── oil_temp_warning.h
-            │   ├── oil_temp_warning.cpp
-	    │   ├──  fan_cooling_control.h
-	    │      ├──  fan_cooling_control.cpp
-	    │
-            ├── signals/
-            │   └── signal.h
-            └── utility/
-                ├── hysteresis.h
-                └── increment_timer.h
+├── Arduino_project/
+│   └── OilTempWarningDemo/
+│       ├── OilTempWarningDemo.ino
+│       ├── version management/
+│       │   ├── 1/
+│       │   │   └── OilTempWarningDemo.ino
+│       │   ├── 2/
+│       │   │   └── OilTempWarningDemo.ino
+│       │   ├── 3/
+│       │   │   └── OilTempWarningDemo.ino
+│       │
+│       └── src/
+│           ├── framework/
+│           │   ├── manager.h
+│           │   └── module_interface.h
+│           ├── modules/
+│           │   ├── oil_temp_warning.h
+│           │   ├── oil_temp_warning.cpp
+│	        │   ├──  fan_cooling_control.h
+│	        │   ├──  fan_cooling_control.cpp
+│	        │
+│           ├── signals/
+│           │   └── signal.h
+│           └── utility/
+│               ├── hysteresis.h
+│                └── increment_timer.h
+└── README.md
 ```
 
 ---
@@ -238,7 +292,7 @@ It knows the concrete classes because its responsibility is to assemble the comp
 
 ---
 
-## Arduino UNO Oil-Temperature Warning Demo
+## Arduino PROJECT Oil-Temperature Warning Demo
 
 The Arduino demo has been successfully compiled, uploaded, and tested on an Arduino UNO-compatible board.
 
@@ -246,6 +300,10 @@ The Arduino demo has been successfully compiled, uploaded, and tested on an Ardu
 
 * Arduino UNO
 * 10 kΩ potentiometer
+* IN 4007 NPN
+* PN 2222
+* motor
+* 1k resistence
 * built-in LED
 * jumper wires
 * breadboard
@@ -483,6 +541,8 @@ Completed:
 * Non-blocking periodic execution
 * Hysteresis-based warning behavior
 * Successful hardware test on Arduino UNO
+* Relization of two modules in circuit (fan cooling control and oil temp waring)
+* Successful motor output
 
 ---
 
