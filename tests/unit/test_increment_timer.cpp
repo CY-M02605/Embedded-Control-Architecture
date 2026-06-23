@@ -7,7 +7,7 @@
 // because the Arduino function millis() in increment_timer.h in Arduino_project
 // I rewrote another increment_timer_for_arduino_project.h in outside utility folder for unit test
 // #include "utility/increment_timer.h"
-#include "utility/increment_timer_for_arduino_project.h"
+#include "increment_timer_for_arduino_project.h"
 
 #include <cassert>
 

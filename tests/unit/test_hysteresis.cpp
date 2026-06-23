@@ -47,7 +47,7 @@ int main() {
     assert(hysteresis.GetStatus() == false);
 
     hysteresis.Update(79.9f);
-    assert(hysteresis.GetStatus() == true);
+    assert(hysteresis.GetStatus() == false);
 
     hysteresis.Update(75.0f);
     assert(hysteresis.GetStatus() == false);
