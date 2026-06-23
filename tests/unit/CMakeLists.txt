@@ -41,7 +41,7 @@ add_executable(test_increment_timer
 )
 
 target_include_directories(test_increment_timer PRIVATE
-    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/../../utility
 )
 
 add_test(
