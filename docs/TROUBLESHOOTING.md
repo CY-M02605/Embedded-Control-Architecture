@@ -1401,25 +1401,24 @@ For this project, `unsigned long` is acceptable.
 
 ```text
 Embedded-Control-Architecture/
-|---- Arduino_project/
-|   `---- OilTempWarningDemo/
-|       |---- OilTempWarningDemo.ino
-|       `---- src/
-|           |---- framework/
-|           |---- modules/
-|           |---- signals/
-|           `---- utility/
-|---- tests/
-|   |---- module/
-|   `---- unit/
-|       |---- CMakeLists.txt
-|       |---- test_hysteresis.cpp
-|       `---- test_increment_timer.cpp
-|---- utility/
-|---- build/
-|---- docs/
-|---- README.md
-`---- TROUBLESHOOTING.md
+|???? Arduino_project/
+|   `???? OilTempWarningDemo/
+|       |???? OilTempWarningDemo.ino
+|       `???? src/
+|           |???? framework/
+|           |???? modules/
+|           |???? signals/
+|           `???? utility/
+|???? tests/
+|   |???? module/
+|   `???? unit/
+|       |???? CMakeLists.txt
+|       |???? test_hysteresis.cpp
+|       `???? test_increment_timer.cpp
+|???? utility/
+|---- build/ (not pushed into repository)
+|???? docs/
+`???? README.md
 ```
 
 ### Why tests should remain outside the Arduino sketch directory
