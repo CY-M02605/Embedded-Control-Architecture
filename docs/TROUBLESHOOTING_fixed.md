@@ -150,9 +150,9 @@ This suggests:
 
 ```text
 Motor startup current
-    Å´
+    v
 Supply-voltage drop
-    Å´
+    v
 Arduino reset or serial instability
 ```
 
@@ -178,7 +178,7 @@ A recommended low-side switching circuit is:
 ```text
 Arduino D8
     |
-   1 kÉ∂
+   1 kOhm
     |
 PN2222 Base
 
@@ -199,12 +199,12 @@ When D8 is HIGH:
 
 ```text
 Control current:
-D8 Å® 1 kÉ∂ Å® Base Å® Emitter Å® GND
+D8 -> 1 kOhm -> Base -> Emitter -> GND
 ```
 
 ```text
 Motor current:
-5 V Å® Motor Å® Collector Å® Emitter Å® GND
+5 V -> Motor -> Collector -> Emitter -> GND
 ```
 
 When D8 is LOW:
@@ -238,10 +238,10 @@ Correct direction:
 
 ```text
 Diode cathode, marked with a stripe
-    Å® Motor positive terminal / 5 V
+    -> Motor positive terminal / 5 V
 
 Diode anode
-    Å® Motor negative terminal / transistor collector
+    -> Motor negative terminal / transistor collector
 ```
 
 During normal operation, the diode does not conduct.
@@ -277,10 +277,10 @@ Therefore:
 
 ```text
 104 capacitor
-Å® Good for high-frequency noise suppression
+-> Good for high-frequency noise suppression
 
 Large electrolytic capacitor
-Å® Better for short supply-voltage dips
+-> Better for short supply-voltage dips
 ```
 
 A larger capacitor such as:
@@ -326,7 +326,7 @@ I ? 0
 Therefore, the motor voltage drop is approximately zero:
 
 ```text
-VMotor = I Å~ R ? 0
+VMotor = I * R ? 0
 ```
 
 The collector is pulled toward the supply voltage through the motor:
@@ -377,7 +377,7 @@ Recommended connection:
 ```text
 5 V
  |
-220 É∂ to 1 kÉ∂ resistor
+220 Ohm to 1 kOhm resistor
  |
 LED
  |
@@ -581,10 +581,10 @@ utility::Hysteresis hysteresis({
 Expected behavior:
 
 ```text
-Below 85 while OFF  Å® remain OFF
-At or above 85      Å® switch ON
-Between 80 and 85   Å® preserve state
-At or below 80      Å® switch OFF
+Below 85 while OFF  -> remain OFF
+At or above 85      -> switch ON
+Between 80 and 85   -> preserve state
+At or below 80      -> switch OFF
 ```
 
 ---
@@ -785,7 +785,7 @@ Creating a second timer implementation only for PC tests may work, but it has a 
 
 ```text
 Production timer
-ÅÇ
+!=
 Test-only timer
 ```
 
@@ -937,10 +937,10 @@ Summary:
 
 ```text
 add_executable()
-Å® Which source files should be compiled?
+-> Which source files should be compiled?
 
 target_include_directories()
-Å® Where should the compiler search for header files?
+-> Where should the compiler search for header files?
 ```
 
 ---
@@ -1017,10 +1017,10 @@ Recommended layout:
 
 ```text
 tests/unit
-Å® Source directory
+-> Source directory
 
 build/tests/unit
-Å® Build directory
+-> Build directory
 ```
 
 ---
@@ -1178,10 +1178,10 @@ Meaning:
 
 ```text
 -S
-Å® Source directory containing CMakeLists.txt
+-> Source directory containing CMakeLists.txt
 
 -B
-Å® Build output directory
+-> Build output directory
 ```
 
 ### Build
@@ -1228,9 +1228,9 @@ Typical sequence:
 
 ```text
 CMake configure
-    Å´
+    v
 CMake build
-    Å´
+    v
 CTest run
 ```
 
@@ -1401,25 +1401,25 @@ For this project, `unsigned long` is acceptable.
 
 ```text
 Embedded-Control-Architecture/
-Ñ•ÑüÑü Arduino_project/
-Ñ†   Ñ§ÑüÑü OilTempWarningDemo/
-Ñ†       Ñ•ÑüÑü OilTempWarningDemo.ino
-Ñ†       Ñ§ÑüÑü src/
-Ñ†           Ñ•ÑüÑü framework/
-Ñ†           Ñ•ÑüÑü modules/
-Ñ†           Ñ•ÑüÑü signals/
-Ñ†           Ñ§ÑüÑü utility/
-Ñ•ÑüÑü tests/
-Ñ†   Ñ•ÑüÑü module/
-Ñ†   Ñ§ÑüÑü unit/
-Ñ†       Ñ•ÑüÑü CMakeLists.txt
-Ñ†       Ñ•ÑüÑü test_hysteresis.cpp
-Ñ†       Ñ§ÑüÑü test_increment_timer.cpp
-Ñ•ÑüÑü utility/
-Ñ•ÑüÑü build/
-Ñ•ÑüÑü docs/
-Ñ•ÑüÑü README.md
-Ñ§ÑüÑü TROUBLESHOOTING.md
+|---- Arduino_project/
+|   `---- OilTempWarningDemo/
+|       |---- OilTempWarningDemo.ino
+|       `---- src/
+|           |---- framework/
+|           |---- modules/
+|           |---- signals/
+|           `---- utility/
+|---- tests/
+|   |---- module/
+|   `---- unit/
+|       |---- CMakeLists.txt
+|       |---- test_hysteresis.cpp
+|       `---- test_increment_timer.cpp
+|---- utility/
+|---- build/
+|---- docs/
+|---- README.md
+`---- TROUBLESHOOTING.md
 ```
 
 ### Why tests should remain outside the Arduino sketch directory
