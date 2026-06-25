@@ -602,12 +602,12 @@ The purpose is to practice:
 ## Troubleshooting
 
 See [Troubleshooting Notes](docs/TROUBLESHOOTING.md).
-¨ Symptoms, causes, diagnosis, and solutions
+-> Symptoms, causes, diagnosis, and solutions
 
 ## Circuitnotes
 
 See [Troubleshooting Notes](docs/CIRCUIT_NOTES.md).
-¨ Circuit design, theory, formulas, measurements, and improvements
+-> Circuit design, theory, formulas, measurements, and improvements
 
 ## License
 
