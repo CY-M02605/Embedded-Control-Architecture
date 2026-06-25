@@ -34,108 +34,108 @@ The main goals of this project are:
 ```text
 Embedded-Control-Architecture/
 ├── assembly/
-│   ├── instantiation.h
-│   └── instantiation_practice.h
-│
+�?   ├── instantiation.h
+�?   └── instantiation_practice.h
+�?
 ├── docs/
-│   ├── circuit-notes.md
-│   └── troubleshooting.md
-│
+�?   ├── circuit-notes.md
+�?   └── troubleshooting.md
+�?
 ├── examples/
-│   ├── 
-│   └── 
-│
+�?   ├── 
+�?   └── 
+�?
 ├── framework/
-│   ├── manager.h
-│   └── module_interface.h
-│
+�?   ├── manager.h
+�?   └── module_interface.h
+�?
 ├── modules/
-│   ├── gear_display_facade/
-│   │   ├── include/
-│   │   │   ├── gear_display_facade.h
-│   │   │   └── gear_types.h
-│   │   └── src/
-│   │       └── gear_display_facade.cc
-│   ├── hydraulic_oil_warning/
-│   │   ├── include/
-│   │   │   └── hydraulic_oil_warning.h
-│   │   └── src/
-│   │       └── hydraulic_oil_warning.cc
-│   ├── instantiation_practice/
-│   │   ├── include/
-│   │   │   ├── instantiation_practice.h
-│   │   │   └── speed_monitor.h
-│   │   └── src/
-│   ├── wl_cooling_fan_control/
-│   │   ├── include/
-│   │   │   ├── wl_cooling_fan_control.h
-│   │   │   └── wlCoolingFanControl.h
-│   │   └── src/
-│   │       ├── wl_cooling_fan_control.cc
-│   │       └── wlCoolingFanControl.cc
-│   ├── wl_vehicle_speed/
-│   │   ├── include/
-│   │   │   ├── wl_vehicle_speed.h
-│   │   │   └── wlVehicleSpeed.h
-│   │   └── src/
-│   │       ├── wl_vehicle_speed.cc
-│   │       └── wlVehicleSpeed.cc
-│   ├── 
-│
+�?   ├── gear_display_facade/
+�?   �?   ├── include/
+�?   �?   �?   ├── gear_display_facade.h
+�?   �?   �?   └── gear_types.h
+�?   �?   └── src/
+�?   �?       └── gear_display_facade.cc
+�?   ├── hydraulic_oil_warning/
+�?   �?   ├── include/
+�?   �?   �?   └── hydraulic_oil_warning.h
+�?   �?   └── src/
+�?   �?       └── hydraulic_oil_warning.cc
+�?   ├── instantiation_practice/
+�?   �?   ├── include/
+�?   �?   �?   ├── instantiation_practice.h
+�?   �?   �?   └── speed_monitor.h
+�?   �?   └── src/
+�?   ├── wl_cooling_fan_control/
+�?   �?   ├── include/
+�?   �?   �?   ├── wl_cooling_fan_control.h
+�?   �?   �?   └── wlCoolingFanControl.h
+�?   �?   └── src/
+�?   �?       ├── wl_cooling_fan_control.cc
+�?   �?       └── wlCoolingFanControl.cc
+�?   ├── wl_vehicle_speed/
+�?   �?   ├── include/
+�?   �?   �?   ├── wl_vehicle_speed.h
+�?   �?   �?   └── wlVehicleSpeed.h
+�?   �?   └── src/
+�?   �?       ├── wl_vehicle_speed.cc
+�?   �?       └── wlVehicleSpeed.cc
+�?   ├── 
+�?
 ├── signals/
-│   └── signal.h
-│
+�?   └── signal.h
+�?
 ├── utility/
-│   ├── hysteresis.h
-│   └── increment_timer.h
-│
+�?   ├── hysteresis.h
+�?   └── increment_timer.h
+�?
 ├── tests/
-│   ├── module/
-│   │   ├── gear_display_facade/
-│   │   │   ├── CMakeLists.txt
-│   │   │   └── main.cpp
-│   │   ├── hydraulic_oil_warning/
-│   │   │   ├── CMakeLists.txt
-│   │   │   └── main.cpp
-│   │   ├── instantiation_practice/
-│   │   │   ├── CMakeLists.txt
-│   │   │   └── main.cpp
-│   │   ├── wl_cooling_fan_control/
-│   │   │   ├── CMakeLists.txt
-│   │   │   └── main.cpp
-│   │   └── wl_vehicle_speed/
-│   │   │   ├── CMakeLists.txt
-│   │   │   └── main.cpp
-│   └── unit/
-│       ├── CMakeLists.txt
-│       └── test_hysteresis.cpp
-│
+�?   ├── module/
+�?   �?   ├── gear_display_facade/
+�?   �?   �?   ├── CMakeLists.txt
+�?   �?   �?   └── main.cpp
+�?   �?   ├── hydraulic_oil_warning/
+�?   �?   �?   ├── CMakeLists.txt
+�?   �?   �?   └── main.cpp
+�?   �?   ├── instantiation_practice/
+�?   �?   �?   ├── CMakeLists.txt
+�?   �?   �?   └── main.cpp
+�?   �?   ├── wl_cooling_fan_control/
+�?   �?   �?   ├── CMakeLists.txt
+�?   �?   �?   └── main.cpp
+�?   �?   └── wl_vehicle_speed/
+�?   �?   �?   ├── CMakeLists.txt
+�?   �?   �?   └── main.cpp
+�?   └── unit/
+�?       ├── CMakeLists.txt
+�?       └── test_hysteresis.cpp
+�?
 ├── Arduino_project/
-│   └── OilTempWarningDemo/
-│       ├── OilTempWarningDemo.ino
-│       ├── version management/
-│       │   ├── 1/
-│       │   │   └── OilTempWarningDemo.ino
-│       │   ├── 2/
-│       │   │   └── OilTempWarningDemo.ino
-│       │   ├── 3/
-│       │   │   └── OilTempWarningDemo.ino
-│       │
-│       └── src/
-│           ├── framework/
-│           │   ├── manager.h
-│           │   └── module_interface.h
-│           ├── modules/
-│           │   ├── oil_temp_warning.h
-│           │   ├── oil_temp_warning.cpp
-│	        │   ├──  fan_cooling_control.h
-│	        │   ├──  fan_cooling_control.cpp
-│	        │
-│           ├── signals/
-│           │   └── signal.h
-│           └── utility/
-│               ├── hysteresis.h
-│                └── increment_timer.h
+�?   └── OilTempWarningDemo/
+�?       ├── OilTempWarningDemo.ino
+�?       ├── version management/
+�?       �?   ├── 1/
+�?       �?   �?   └── OilTempWarningDemo.ino
+�?       �?   ├── 2/
+�?       �?   �?   └── OilTempWarningDemo.ino
+�?       �?   ├── 3/
+�?       �?   �?   └── OilTempWarningDemo.ino
+�?       �?
+�?       └── src/
+�?           ├── framework/
+�?           �?   ├── manager.h
+�?           �?   └── module_interface.h
+�?           ├── modules/
+�?           �?   ├── oil_temp_warning.h
+�?           �?   ├── oil_temp_warning.cpp
+�?	        �?   ├──  fan_cooling_control.h
+�?	        �?   ├──  fan_cooling_control.cpp
+�?	        �?
+�?           ├── signals/
+�?           �?   └── signal.h
+�?           └── utility/
+�?               ├── hysteresis.h
+�?                └── increment_timer.h
 └── README.md
 ```
 
@@ -330,23 +330,23 @@ constexpr int WARNING_LED_PIN = LED_BUILTIN;
 
 ```text
 Potentiometer
-    ↓
+    �?
 Arduino A0
-    ↓
+    �?
 analogRead()
-    ↓
+    �?
 ADC value: 0-1023
-    ↓
+    �?
 Simulated oil temperature: 0-120 °C
-    ↓
+    �?
 FloatSignal
-    ↓
+    �?
 OilTempWarning::Update()
-    ↓
+    �?
 Hysteresis
-    ↓
+    �?
 BoolSignal
-    ↓
+    �?
 Built-in LED
 ```
 
@@ -419,17 +419,17 @@ The control flow is:
 
 ```text
 Check timer
-    ↓
+    �?
 Read analog input
-    ↓
+    �?
 Update input signal
-    ↓
+    �?
 Call Manager::UpdateAll()
-    ↓
+    �?
 Read warning output
-    ↓
+    �?
 Update LED
-    ↓
+    �?
 Print debug information
 ```
 
@@ -601,7 +601,13 @@ The purpose is to practice:
 
 ## Troubleshooting
 
-See [Troubleshooting Notes](docs/troubleshooting.md).
+See [Troubleshooting Notes](docs/TROUBLESHOOTING.md).
+�� Symptoms, causes, diagnosis, and solutions
+
+## Circuitnotes
+
+See [Troubleshooting Notes](docs/CIRCUIT_NOTES.md).
+�� Circuit design, theory, formulas, measurements, and improvements
 
 ## License
 
