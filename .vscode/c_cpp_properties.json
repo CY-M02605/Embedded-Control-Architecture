@@ -1,28 +1,37 @@
 {
-  "configurations": [
-    {
-      "name": "Win32",
-      "includePath": [
-        "${workspaceFolder}/**",
-        "${workspaceFolder}/modules/gear_display_facade/include",
-        "${workspaceFolder}/modules/hydraulic_oil_warning/include",
-        "${workspaceFolder}/modules/instantiation_practice/include",
-        "${workspaceFolder}/modules/wl_cooling_fan_control/include",
-        "${workspaceFolder}/modules/wl_vehicle_speed/include",
-
-        "${workspaceFolder}/Arduino_project/OilTempWarningDemo/src",
-
-        "${workspaceFolder}/framework",
-        "${workspaceFolder}/signals",
-        "${workspaceFolder}/assembly",
-        "${workspaceFolder}/utility"
-      ],
-      "defines": [],
-      "compilerPath": "cl.exe",
-      "cStandard": "c17",
-      "cppStandard": "c++17",
-      "intelliSenseMode": "windows-msvc-x64"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/modules/gear_display_facade/include",
+                "${workspaceFolder}/modules/hydraulic_oil_warning/include",
+                "${workspaceFolder}/modules/instantiation_practice/include",
+                "${workspaceFolder}/modules/wl_cooling_fan_control/include",
+                "${workspaceFolder}/modules/wl_vehicle_speed/include",
+                "${workspaceFolder}/modules/engine_overheat_protection/include",
+                "${workspaceFolder}/Arduino_project/OilTempWarningDemo/src",
+                "${workspaceFolder}/framework",
+                "${workspaceFolder}/signals",
+                "${workspaceFolder}/assembly",
+                "${workspaceFolder}/utility"
+            ],
+            "defines": [],
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "intelliSenseMode": "linux-gcc-x64",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
 }
