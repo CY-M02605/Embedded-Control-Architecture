@@ -1,3 +1,9 @@
+/**
+ * @file manager.h
+ * @brief Defines the manager responsible for module registration and cyclic execution
+ * @date 2026-06-11
+ */
+
 #ifndef MANAGER_H
 #define MANAGER_H
 
@@ -8,22 +14,27 @@
 namespace framework {
 class Manager {
     public:
-        // Register a module into the vector
         void RegisterModule(ModuleInterface& module) {
-            modules_.push_back(&module);  // Take address of reference, store as pointer
+            modules_.push_back(&module);
         }
 
-        // Call Update() on all registered modules (one cycle)
         void UpdateAll() {
-            for (std::size_t i = 0; i < modules_.size(); ++i) {
-                modules_[i]->Update();  // Polymorphic call via virtual function
+            // first method
+            // for (std::size_t i = 0; i < modules_.size(); ++i) {
+            //     modules_[i]->Update();
+            // }
+
+            // second method
+            for (ModuleInterface* module : modules_) {
+                module->Update();
             }
         }
 
+        
+        
     private:
-        // All module types inherit ModuleInterface, so we store ModuleInterface*
-        std::vector<ModuleInterface*> modules_;
+        std::vector<ModuleInterface*> modules_;  
 };
-}
+}   // namespace framework
 
 #endif
