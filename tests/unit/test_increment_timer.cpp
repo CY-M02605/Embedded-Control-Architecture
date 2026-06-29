@@ -15,25 +15,25 @@ int main() {
     utility::IncrementTimerForAP increment_timer(100, 0);
 
     increment_timer.Update(0UL);
-    assert(increment_timer.OutputRef() == false);
+    assert(increment_timer.GetOutPut() == false);
 
     increment_timer.Update(99);
-    assert(increment_timer.OutputRef() == false);
+    assert(increment_timer.GetOutPut() == false);
 
     increment_timer.Update(100);
-    assert(increment_timer.OutputRef() == true);
+    assert(increment_timer.GetOutPut() == true);
 
     increment_timer.Update(101);
-    assert(increment_timer.OutputRef() == false);
+    assert(increment_timer.GetOutPut() == false);
 
     increment_timer.Update(199);
-    assert(increment_timer.OutputRef() == false);
+    assert(increment_timer.GetOutPut() == false);
 
     increment_timer.Update(200);
-    assert(increment_timer.OutputRef() == true);
+    assert(increment_timer.GetOutPut() == true);
 
     increment_timer.Update(201);
-    assert(increment_timer.OutputRef() == false);    
+    assert(increment_timer.GetOutPut() == false);    
     
     return 0;
 }

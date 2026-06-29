@@ -26,7 +26,7 @@ class IncrementTimerForAP {
             }
         }
 
-        bool OutputRef() {
+        bool GetOutPut() {
             return output_;
         }
 
