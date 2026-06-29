@@ -14,25 +14,27 @@
 namespace framework {
 class Manager {
     public:
+
+        // Register a module by storing its address in the module container.
         void RegisterModule(ModuleInterface& module) {
             modules_.push_back(&module);
         }
 
+        // Call UpdateAll() for every registered module.
         void UpdateAll() {
-            // first method
+            // Index-based iteration
             // for (std::size_t i = 0; i < modules_.size(); ++i) {
             //     modules_[i]->Update();
             // }
 
-            // second method
+            // Range-based iteration
             for (ModuleInterface* module : modules_) {
                 module->Update();
             }
         }
-
-        
         
     private:
+        // Store pointers to all registered modules.
         std::vector<ModuleInterface*> modules_;  
 };
 }   // namespace framework
