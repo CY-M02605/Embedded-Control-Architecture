@@ -22,8 +22,8 @@ enum class OnOffStatus {
 template<typename T>
 class Signal {
     public:
-        Siganl():value_(T()), validity_(ValidityStatus::VALID) {}
-        Siganl(T value, ValidityStatus validity)
+        Signal():value_(T()), validity_(ValidityStatus::VALID) {}
+        Signal(T value, ValidityStatus validity)
             : value_(value),
             validity_(validity) {}
 
