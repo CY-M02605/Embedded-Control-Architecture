@@ -85,7 +85,11 @@ Embedded-Control-Architecture/
 |   |   └── src/
 |   |       ├── wl_vehicle_speed.cc
 |   |       └── wlVehicleSpeed.cc
-|   ├── 
+|   ├── engine_overheat_protection/
+|   |   ├── include/
+|   |   |   └── engine_overheat_protection.h
+|   |   └── src/
+|   |       └── engine_overheat_protection.cc
 |
 ├── signals/
 |   └── signal.h
@@ -214,6 +218,7 @@ Examples include:
 -   vehicle-speed calculation
 -   gear-display facade
 -   speed monitoring
+-   engine_overheat_protection
 
 A typical module:
 
@@ -223,6 +228,25 @@ A typical module:
 
 The Arduino `OilTempWarning` module reads a temperature signal and
 produces a warning signal.
+
+#### Engine Overheat Protection
+
+The `EngineOverheatProtection` module monitors the engine-running state
+and hydraulic oil temperature.
+
+It activates overheat protection when the oil temperature remains above
+the configured high threshold for the configured duration.
+
+##### State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+
+    IDLE --> COUNTING: Engine running and oil temperature >= high threshold
+    COUNTING --> PROTECTED: Timer elapsed
+    COUNTING --> IDLE: Oil temperature <= low threshold
+    PROTECTED --> IDLE: Oil temperature <= low threshold
 
 ------------------------------------------------------------------------
 
