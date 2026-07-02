@@ -19,7 +19,7 @@ set(PC_SOURCE_DIR
 enable_testing()
 
 # ======================================================================
-# 1、 Hysteresis unit test part
+# 1.Hysteresis unit test part
 # ======================================================================
 
 add_executable(test_hysteresis
@@ -36,7 +36,7 @@ add_test(
 )
 
 # ======================================================================
-# 2、 increment_timer unit test part
+# 2.increment_timer unit test part
 # ======================================================================
 
 add_executable(test_increment_timer
@@ -50,4 +50,21 @@ target_include_directories(test_increment_timer PRIVATE
 add_test(
     NAME IncrementTimerTest
     COMMAND test_increment_timer
+)
+
+# ======================================================================
+# 3.lookup table 1d unit test part
+# ======================================================================
+
+add_executable(test_lookup_table_1d
+    test_lookup_table_1d.cpp
+)
+
+target_include_directories(test_lookup_table_1d PRIVATE
+    ${PC_SOURCE_DIR}/utility
+)
+
+add_test(
+    NAME LookupTable1DTest
+    COMMAND test_lookup_table_1d
 )

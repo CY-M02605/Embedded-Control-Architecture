@@ -1,7 +1,7 @@
 /**
  * @file lookup_table_1d.h
- * @brief Provides a generic one-dimensional lookup table with linear interpolation and boundary handling.
- * @date 2026-06-30
+ * @brief Provides a generic one-dimensional lookup table with linaer interpolation and boundary handling
+ * @date 2026-6-30
  */
 
 #ifndef LOOKUP_TABLE_1D_H
@@ -10,6 +10,7 @@
 #include <cstddef>
 
 namespace utility {
+
 template <typename T>
 class LookupTable1D {
 public:
@@ -21,7 +22,7 @@ public:
     LookupTable1D(const Point* points, std::size_t size):
     points_(points), size_(size) {}
 
-    T Update(T input) const {
+    T LookupTable(T input) const {
         if (input <= points_[0].input) {
             return points_[0].output;
         }
@@ -31,15 +32,12 @@ public:
         }
 
         for (int i = 0; i < size_ - 1; ++i) {
-            T input_lower = points_[i].input;
-            T input_upper = points_[i+1].input;
+            Point lower = points_[i];
+            Point upper = points_[i + 1];
 
-            T output_lower = points_[i].output;
-            T output_upper = points_[i+1].output;
-
-            if (input_lower > input_lower && input_lower <= input_upper) {
-                T ratio = (input - input_upper) / (input_lower - input_upper);
-                T output = ratio * (output_lower - output_upper) + output_upper;
+            if (input > lower.input && input <= upper.input) {
+                T ratio = (input - lower.input) / (upper.input - lower.input);
+                T output = ratio * (upper.output - lower.output) + lower.output;
                 return output;
             }
         }
