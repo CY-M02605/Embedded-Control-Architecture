@@ -47,9 +47,9 @@ class EngineOverheatProtection: public framework::ModuleInterface {
 
         const signals::BoolSignal& IsOverheatProtectedRef() const;
 
-        const signals::BoolSignal& IsOverheatTorqueDecreasingRef() const;
+        const signals::FloatSignal& TorqueLimitRef() const;
 
-        const signals::BoolSignal& IsOverheatTorqueDecreasingRef() const;
+        const signals::FloatSignal& FanRequestRef() const;
 
     private:
         EngineOverheatProtectionState state_;
@@ -59,8 +59,8 @@ class EngineOverheatProtection: public framework::ModuleInterface {
         const signals::BoolSignal& is_engine_running_;
         signals::BoolSignal is_overheat_protected_output_;
         
-        signals::FloatSignal is_overheat_torque_decreasing_output_;
-        signals::FloatSignal is_overheat_fan_output_;
+        signals::FloatSignal torque_limit_output_;
+        signals::FloatSignal fan_request_output_;
         
         utility::IncrementTimer increment_timer_;
         utility::LookupTable1D<float> torque_lookup_table_;
