@@ -47,7 +47,7 @@ Embedded-Control-Architecture/
 |   └── troubleshooting.md
 |
 ├── examples/
-|   ├── 
+|   ├── oil_temp-fan and torque state.md
 |   └── 
 |
 ├── framework/
@@ -137,9 +137,9 @@ Embedded-Control-Architecture/
 |           ├── modules/
 |           |   ├── oil_temp_warning.h
 |           |   ├── oil_temp_warning.cpp
-|          |   ├──  fan_cooling_control.h
-|          |   ├──  fan_cooling_control.cpp
-|          |
+|           |   ├──  fan_cooling_control.h
+|           |   ├──  fan_cooling_control.cpp
+|           |
 |           ├── signals/
 |           |   └── signal.h
 |           └── utility/
