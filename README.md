@@ -544,16 +544,18 @@ Then:
 
 ## unit test
 
-cmake -S .`\tests`{=tex}`\unit -B .\build\tests\unit
+cmake -S .\tests\unit -B .\build\tests\unit
 cmake --build .\build\tests\unit --config Debug
 ctest --test-dir .\build\tests\unit -C Debug --output-on-failure
-    explaination: 
-     ctest: operater test
-     --test-dir: find the location of test
-     -C Debug: decide which version to operater test
-     --output-on-failure: show failure details
 
----`{=tex}
+Explanation:
+
+- `ctest`: runs the registered tests
+- `--test-dir`: specifies the test build directory
+- `-C Debug`: selects the Debug configuration
+- `--output-on-failure`: displays details when a test fails
+
+------------------------------------------------------------------------
 
 ## Design Notes
 
