@@ -30,9 +30,9 @@ class EngineOverheatProtection: public framework::ModuleInterface {
             float oil_low_threshold;
             float oil_high_threshold;
             utility::IncrementTimer::Config increment_timer_config;
-            utility::LookupTable1D<float>::Point* torque_lookup_table_points;
+            const utility::LookupTable1D<float>::Point* torque_lookup_table_points;
             std::size_t torque_lookup_table_size;
-            utility::LookupTable1D<float>::Point* fan_lookup_table_points;
+            const utility::LookupTable1D<float>::Point* fan_lookup_table_points;
             std::size_t fan_lookup_table_size;
         };
 
