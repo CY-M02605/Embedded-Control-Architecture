@@ -64,8 +64,13 @@ void TestIdleWhenEngineStopped() {
 
     manager.UpdateAll();
 
+    CycleInput scenario[] = {
+        {0.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::VALID},
+        {80.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::VALID},  
+    }
+
     assert(epo_test.FanRequestRef().GetValue() == signals::ValidityStatus::INVALID);
-    
+    assert(epo_test.)
 }
 
 void TestEnterCountingWhenTemperatureHigh();
