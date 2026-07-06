@@ -1,7 +1,10 @@
 #include <iostream>
-#include "framework/manager.h"
-#include "signals/signal.h"
-#include "modules/hydraulic_oil_warning.h"
+
+#include "manager.h"
+#include "module_interface.h"
+
+#include "signal.h"
+#include "hydraulic_oil_warning.h"
 
 const char* OnOffStr(signals::OnOffState s) {
     return (s == signals::ON) ? "ON" : "OFF";
