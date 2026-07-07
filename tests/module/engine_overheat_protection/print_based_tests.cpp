@@ -45,7 +45,7 @@ int main() {
 
     config.oil_low_threshold = 80;
     config.oil_high_threshold = 90;
-    config.increment_timer_config.threshold_timer = 0;
+    config.increment_timer_config.threshold_timer = 3;
     config.fan_lookup_table_points = oil_temp_fan_request_table;
     config.torque_lookup_table_points = oil_temp_torque_limit_table;
     config.fan_lookup_table_size = sizeof(oil_temp_fan_request_table) / sizeof(oil_temp_fan_request_table[0]);
