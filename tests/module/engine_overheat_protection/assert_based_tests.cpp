@@ -164,12 +164,12 @@ void TestCountingState() {
     signals::FloatSignal oil_temp = signals::FloatSignal(0.0f, signals::ValidityStatus::VALID);
     signals::BoolSignal is_engine_running = signals::BoolSignal(0.0f, signals::ValidityStatus::VALID);
 
-    engine_overheat_protection::EngineOverheatProtection eop_test {
+    engine_overheat_protection::EngineOverheatProtection eop_test (
         create_counting_idle_config,
         oil_temp,
         is_engine_running,
         manager
-    };
+    );
 
     CycleInput scenario_input[] = {
 
@@ -234,8 +234,105 @@ void TestCountingState() {
     }
 };
 
+void TestProtectedState() {
+    framework::Manager manager;
+
+    struct CycleInput {
+        float oil_temp;
+        signals::ValidityStatus oil_temp_validity;
+        float is_engine_running;
+        signals::ValidityStatus is_engine_running_validity;
+    };
+
+    struct CycleOutput {
+        bool is_overheat_protected_output;
+        signals::ValidityStatus is_overheat_protected_validity;
+        float torque_limit_output;
+        signals::ValidityStatus torque_limit_validity;
+        float fan_request_output;
+        signals::ValidityStatus fan_request_validity;
+    };
+
+    engine_overheat_protection::EngineOverheatProtection::Config create_protected_state_config = CreateDefaultConfig();
+
+    signals::FloatSignal oil_temp = signals::FloatSignal(0.0f, signals::ValidityStatus::VALID);
+    signals::BoolSignal is_engine_running = signals::BoolSignal(false, signals::ValidityStatus::VALID);
+
+    engine_overheat_protection::EngineOverheatProtection eop_test (
+        create_protected_state_config,
+        oil_temp,
+        is_engine_running,
+        manager
+    );
+
+    CycleInput scenario_input[] = {
+
+        // if (increment_timer_.IsTimeUp()) -> entrence of PROTECTED_1
+        {89.9f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.1f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.2f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.3f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        // if (!is_engine_running_.IsValid() || !oil_temp_.IsValid())
+        {90.3f, signals::ValidityStatus::INVALID, true, signals::ValidityStatus::VALID},
+        {90.3f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::INVALID},
+        {90.3f, signals::ValidityStatus::INVALID, true, signals::ValidityStatus::INVALID},
+
+        // if (increment_timer_.IsTimeUp()) -> entrence of PROTECTED_1
+        {89.9f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.1f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.2f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.3f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        // if (oil_temp_.GetValue() <= config_.oil_low_threshold)
+        {79.9f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID}
+
+    };
+
+    CycleOutput scenario_output[] = {
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 39.8f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.25f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.5f, signals::ValidityStatus::VALID},
+        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.75f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID},
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID},
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID},
+        
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 39.8f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.25f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.5f, signals::ValidityStatus::VALID},
+        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.75f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID}
+    };
+
+    std::size_t size_of_input = sizeof(scenario_input) / sizeof(scenario_input[0]);
+    std::size_t size_of_output = sizeof(scenario_output) / sizeof(scenario_output[0]);
+
+    assert(size_of_output == size_of_input);
+
+    for (std::size_t i = 0; i < size_of_input; ++i) {
+        oil_temp.SetValue(scenario_input[i].oil_temp);
+        oil_temp.SetValidity(scenario_input[i].oil_temp_validity);
+        is_engine_running.SetValue(scenario_input[i].is_engine_running);
+        is_engine_running.SetValidity(scenario_input[i].is_engine_running_validity);
+
+        manager.UpdateAll();
+
+        assert(eop_test.IsOverheatProtectedRef().GetValue() == scenario_output[i].is_overheat_protected_output);
+        assert(eop_test.IsOverheatProtectedRef().GetValidity() == scenario_output[i].is_overheat_protected_validity);
+        assert(FloatEqual(eop_test.TorqueLimitRef().GetValue(), scenario_output[i].torque_limit_output));
+        assert(eop_test.TorqueLimitRef().GetValidity() == scenario_output[i].torque_limit_validity);
+        assert(FloatEqual(eop_test.FanRequestRef().GetValue(), scenario_output[i].fan_request_output));
+        assert(eop_test.FanRequestRef().GetValidity() == scenario_output[i].fan_request_validity);
+    }
+}
+
 int main() {
     std::cout << "============ Engine Overheat Protection Tests ============" << std::endl;
+
+    std::cout << std::endl;
 
     const auto idle_state_start_time = std::chrono::steady_clock::now();
 
@@ -261,11 +358,11 @@ int main() {
 
     const auto counting_state_start_time = std::chrono::steady_clock::now();
 
-    std::cout << "============ Engine Overheat Protection Counting state Tests Starting ============" << std::endl;
+    std::cout << "============ Engine Overheat Protection Counting State Tests Starting ============" << std::endl;
 
     TestCountingState();
 
-    std::cout << "============ Engine Overheat Protection Counting state Tests Ending ============" << std::endl;
+    std::cout << "============ Engine Overheat Protection Counting State Tests Ending ============" << std::endl;
 
     const auto counting_state_end_time = std::chrono::steady_clock::now();
 
@@ -276,6 +373,28 @@ int main() {
 
     std::cout << "Counting state test elapsed time: "
               << counting_state_elapsed_us
+              << " us"
+              << std::endl;
+
+    std::cout << std::endl;
+
+    const auto protected_state_start_time = std::chrono::steady_clock::now();
+
+    std::cout << "============ Engine Overheat Protection Protected State Tests Starting ============" << std::endl;
+
+    TestProtectedState();
+
+    std::cout << "============ Engine Overheat Protection Protected State Tests Ending ============" << std::endl;
+
+    const auto protected_state_end_time = std::chrono::steady_clock::now();
+
+    const auto protected_state_elapsed_us =
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            protected_state_end_time - protected_state_start_time
+        ).count();
+
+    std::cout << "Protected state test elapsed time: "
+              << protected_state_elapsed_us
               << " us"
               << std::endl;
 
