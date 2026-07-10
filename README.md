@@ -1,11 +1,8 @@
 # Embedded Control Architecture
 
-A C++ practice project for learning modular embedded control software
-architecture.
+A vehicle-oriented C++ practice project for learning modular embedded control software architecture.
 
-This project explores how embedded control software can be organized
-into reusable modules, shared signals, utility components, a
-manager-based update mechanism, and separate PC and Arduino targets.
+This project explores how embedded control software can be organized into reusable modules, shared signals, utility components, a manager-based update mechanism, and separate PC and Arduino targets.
 
 The project currently includes:
 
@@ -23,14 +20,12 @@ The project currently includes:
 The main goals of this project are:
 
 -   Practice modular C++ design for embedded systems
--   Understand the relationships between modules, signals, framework,
-    utility, and application layers
+-   Understand the relationships between modules, signals, framework, utility, and application layers
 -   Build control modules with clear input and output signal interfaces
 -   Practice header/source separation
--   Practice CMake-based PC builds and manual tests
+-   Practice CMake-based PC builds and print/assert tests
 -   Port reusable control logic to Arduino UNO
--   Learn how to connect software architecture with real hardware input
-    and output
+-   Learn how to connect software architecture with real hardware input and output
 
 ------------------------------------------------------------------------
 
@@ -115,9 +110,15 @@ Embedded-Control-Architecture/
 |   |   └── wl_vehicle_speed/
 |   |   |   ├── CMakeLists.txt
 |   |   |   └── main.cpp
+|   |   └── engine_overheat_protection/
+|   |   |   ├── CMakeLists.txt
+|   |   |   ├── assert_based_tests.cpp
+|   |   |   └── print_based_tests.cpp
 |   └── unit/
 |       ├── CMakeLists.txt
-|       └── test_hysteresis.cpp
+|       ├── test_hysteresis.cpp
+|       ├── test_increment_timer.cpp
+|       └── test_lookup_table_1d.cpp
 |
 ├── Arduino_project/
 |   └── OilTempWarningDemo/
@@ -144,7 +145,7 @@ Embedded-Control-Architecture/
 |           |   └── signal.h
 |           └── utility/
 |               ├── hysteresis.h
-|                └── increment_timer.h
+|               └── increment_timer.h
 └── README.md
 ```
 
@@ -160,8 +161,7 @@ The `framework` layer provides the basic execution structure.
 
 -   `ModuleInterface` defines a common interface for control modules.
 -   `Manager` stores registered modules.
--   `Manager::UpdateAll()` calls the `Update()` function of every
-    registered module.
+-   `Manager::UpdateAll()` calls the `Update()` function of every registered module.
 
 Example:
 
@@ -179,26 +179,16 @@ This allows different modules to be executed through the same interface.
 
 ### Signals
 
-The `signals` layer provides typed signal objects for passing data
-between application code and modules.
+The `signals` layer provides typed signal objects for passing data between the application layer and control modules.
 
 A signal contains:
 
 -   a value
 -   a validity status
 
-Examples:
+The validity status allows a module to distinguish between a real input value and unavailable or invalid data.
 
-``` cpp
-signals::FloatSignal oil_temp_signal;
-signals::BoolSignal warning_output;
-```
-
-The validity status allows a module to distinguish between a real input
-value and unavailable or invalid data.
-
-The input source can later be changed without modifying the control
-module. For example, the oil-temperature signal could come from:
+The input source can later be changed without modifying the control module. For example, the oil-temperature signal could come from:
 
 -   an Arduino analog input
 -   a real temperature sensor
@@ -226,8 +216,7 @@ A typical module:
 2.  processes control logic in `Update()`
 3.  writes one or more output signals
 
-The Arduino `OilTempWarning` module reads a temperature signal and
-produces a warning signal.
+The Arduino `OilTempWarning` module reads a temperature signal and produces a warning signal.
 
 #### Engine Overheat Protection
 
@@ -252,57 +241,45 @@ stateDiagram-v2
 
 ### Utility
 
-The `utility` layer contains reusable helper algorithms and timing
-components.
+The `utility` layer contains reusable helper algorithms and timing components.
 
 Current utilities include:
 
 #### `Hysteresis`
 
-Provides stable switching behavior using separate high and low
-thresholds.
+Provides stable switching behavior using separate high and low thresholds.
 
-Example behavior:
-
+Behavior:
 ``` text
-Temperature >= 95 °C  -> warning ON
-Temperature <= 90 °C  -> warning OFF
-90 °C < temperature < 95 °C -> keep previous state
+Temperature >= high_threshold  -> warning ON
+Temperature <= low_threshold  -> warning OFF
+low_threshold < temperature < high_threshold -> keep previous state
 ```
 
-This prevents the warning output from rapidly switching on and off when
-the input fluctuates near one threshold.
+This prevents the warning output from rapidly switching on and off when the input fluctuates near one threshold.
 
 #### `IncrementTimer`
 
 Provides non-blocking periodic timing using Arduino `millis()`.
 
-It allows the application to execute control logic periodically without
-using `delay()`.
+It allows the application to execute control logic periodically without using `delay()`.
 
-Utilities are included only by the files that actually use them.
-
-For example:
-
--   `OilTempWarning` uses `Hysteresis`
--   `OilTempWarningDemo.ino` uses `IncrementTimer` for the application
-    control period
+* Utilities are included only by the files that actually use them.
 
 ------------------------------------------------------------------------
 
 ### Assembly
 
-The `assembly` layer creates modules and connects signals in the PC
-version of the project.
+The `assembly` layer creates modules and connects signals in the PC version of the project.
 
-It acts as a system-wiring layer where concrete objects are instantiated
-and their dependencies are connected.
+It acts as a system-wiring layer where concrete objects are instantiated and their dependencies are connected.
 
 ------------------------------------------------------------------------
 
 ### Tests
 
-The `tests` folder contains PC-based manual test programs.
+The `tests` folder contains PC-based manual programs separated into unit and module tests.
+Inside of them, there are two test patterns: print based test and assert based test.
 
 These tests are used to:
 
@@ -315,8 +292,7 @@ These tests are used to:
 
 ### Arduino Application Layer
 
-`OilTempWarningDemo.ino` is the Arduino application entry and
-integration layer.
+`OilTempWarningDemo.ino` is the Arduino application entry and integration layer.
 
 It is responsible for:
 
@@ -330,15 +306,13 @@ It is responsible for:
 
 The `.ino` file acts as the composition root of the Arduino application.
 
-It knows the concrete classes because its responsibility is to assemble
-the complete system.
+It knows the concrete classes because its responsibility is to assemble the complete system.
 
 ------------------------------------------------------------------------
 
 ## Arduino PROJECT Oil-Temperature Warning Demo
 
-The Arduino demo has been successfully compiled, uploaded, and tested on
-an Arduino UNO-compatible board.
+The Arduino demo has been successfully compiled, uploaded, and tested on an Arduino UNO-compatible board.
 
 ### Hardware
 
@@ -458,8 +432,7 @@ if (!control_timer.IsExpired()) {
 }
 ```
 
-This means that the fast-running Arduino `loop()` skips the control task
-until the configured period has elapsed.
+This means that the fast-running Arduino `loop()` skips the control task until the configured period has elapsed.
 
 The control flow is:
 
@@ -499,24 +472,34 @@ Go to a test directory, create a build directory, configure CMake, and
 build:
 
 ``` bash
-cd tests/instantiation_practice
-mkdir build
-cd build
-cmake ..
-cmake --build .
+cd Disc_name:\Embedded-Control-Architecture
+cmake -S .\tests\module\"responding module floder" -B .\build\tests\module\"responding module folder"
+cmake --build .\build\tests\module\"responding module folder" --config Debug (or Release)
+cd .\build\tests\module\"responding module folder"\Debug (or Release)
+cd .\"responding generated module .exe file"
 ```
 
 Then run the generated executable.
 
-On Windows, the executable may be generated inside a configuration
-directory such as:
+On Windows, the executable may be generated inside a configuration directory such as:
 
 ``` text
-Debug/
-Release/
+Debug mode: 
+    cmake --build .\build\tests\module\"test + module name.cpp" or "main.cpp" --config Debug
+    cmake --build .\build\tests\unit\"test + module name.cpp" or "main.cpp" --config Debug
+Release mode: 
+    cmake --build .\build\tests\module\"test + module name.cpp" or "main.cpp" --config Release
+    cmake --build .\build\tests\unit\"test + module name.cpp" or "main.cpp" --config Release
 ```
+The main difference between "Debug" and "Release" is that "Debug" builds are intended for development and testing. They keep more debug information and use less optimization, and allow "assert()" to detect the details of failure tests. "Release" builds are intended for more optimized execution. They may disable "assert()" checks depends on compiler setting, so they are not used as the main mode for assertion-based tests.
 
-depending on the selected CMake generator.
+Test command for add_test() items in CMakeList.txt:
+    ctest --test-dir .\build\tests\unit -C Debug --output-on-failure
+    explaination:
+        - `ctest`: runs tests registered by CMake through `add_test()`.
+        - `--test-dir`: specifies the build directory where the test configuration is located.
+        - `-C Debug`: selects the `Debug` configuration for multi-configuration generators such as Visual Studio.
+        - `--output-on-failure`: prints test output only when a test fails.
 
 ------------------------------------------------------------------------
 
@@ -537,23 +520,7 @@ Then:
 5.  Upload it to the board.
 6.  Open the Serial Monitor.
 7.  Select the baud rate configured in `Serial.begin()`.
-8.  Rotate the potentiometer and observe the temperature, warning state,
-    and built-in LED.
-
-------------------------------------------------------------------------
-
-## unit test
-
-cmake -S .\tests\unit -B .\build\tests\unit
-cmake --build .\build\tests\unit --config Debug
-ctest --test-dir .\build\tests\unit -C Debug --output-on-failure
-
-Explanation:
-
-- `ctest`: runs the registered tests
-- `--test-dir`: specifies the test build directory
-- `-C Debug`: selects the Debug configuration
-- `--output-on-failure`: displays details when a test fails
+8.  Rotate the potentiometer and observe the temperature, warning state, and built-in LED.
 
 ------------------------------------------------------------------------
 
@@ -569,8 +536,7 @@ analogRead(A0);
 
 This separates hardware input from control logic.
 
-The same module can later receive temperature data from a different
-source without changing its warning algorithm.
+The same module can later receive temperature data from a different source without changing its warning algorithm.
 
 ### Why `Hysteresis` is inside `OilTempWarning`
 
@@ -581,16 +547,14 @@ turn ON at the high threshold
 turn OFF at the low threshold
 ```
 
-Therefore, it is reasonable for `OilTempWarning` to use `Hysteresis`
-internally.
+Therefore, it is reasonable for `OilTempWarning` to use `Hysteresis` internally.
 
 ### Why `IncrementTimer` is used by the `.ino` file
 
 The current timer controls the execution period of the complete Arduino
 application.
 
-It is therefore part of application scheduling rather than the
-oil-temperature warning algorithm itself.
+It is therefore part of application scheduling rather than the oil-temperature warning algorithm itself.
 
 ------------------------------------------------------------------------
 
@@ -609,9 +573,10 @@ Completed:
 -   Non-blocking periodic execution
 -   Hysteresis-based warning behavior
 -   Successful hardware test on Arduino UNO
--   Relization of two modules in circuit (fan cooling control and oil
-    temp waring)
+-   Relization of two modules in circuit (fan cooling control and oil temp waring)
 -   Successful motor output
+-   Add automated unit tests
+-   Improve CMake organization
 
 ------------------------------------------------------------------------
 
@@ -619,16 +584,13 @@ Completed:
 
 Possible future improvements include:
 
--   Add automated unit tests
--   Improve CMake organization
 -   Add input filtering for noisy analog signals
 -   Add a buzzer warning output
 -   Add an LCD temperature display
 -   Add multiple modules with different update periods
 -   Add CAN-style signal simulation
 -   Add state-machine-based control logic
--   Separate platform-independent utilities from Arduino-specific
-    utilities
+-   Separate platform-independent utilities from Arduino-specific utilities
 -   Add architecture and signal-flow diagrams
 -   Add real temperature-sensor support
 -   Add fault handling for invalid or disconnected inputs
