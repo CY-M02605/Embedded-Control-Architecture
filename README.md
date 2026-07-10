@@ -220,11 +220,9 @@ The Arduino `OilTempWarning` module reads a temperature signal and produces a wa
 
 #### Engine Overheat Protection
 
-The `EngineOverheatProtection` module monitors the engine-running state
-and hydraulic oil temperature.
+The `EngineOverheatProtection` module monitors the engine-running state and hydraulic oil temperature.
 
-It activates overheat protection when the oil temperature remains above
-the configured high threshold for the configured duration.
+It activates overheat protection when the oil temperature remains above the configured high threshold for the configured duration.
 
 ##### State Machine
 
@@ -232,12 +230,11 @@ the configured high threshold for the configured duration.
 stateDiagram-v2
     [*] --> IDLE
 
-    IDLE --> COUNTING: Engine running and oil temperature >= high threshold
+    IDLE --> COUNTING: Engine running and oil temperature is above high threshold
     COUNTING --> PROTECTED: Timer elapsed
-    COUNTING --> IDLE: Oil temperature <= low threshold
-    PROTECTED --> IDLE: Oil temperature <= low threshold
-
-------------------------------------------------------------------------
+    COUNTING --> IDLE: Oil temperature is below low threshold
+    PROTECTED --> IDLE: Oil temperature is below low threshold
+```
 
 ### Utility
 
