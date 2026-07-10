@@ -38,3 +38,20 @@ target_include_directories(
     ${PROJECT_ROOT_DIR}/framework
     ${PROJECT_ROOT_DIR}/signals
 )
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(--coverage -O0 -g)
+    add_link_options(--coverage)
+endif()
+
+enable_testing()
+
+add_test(
+    NAME engine_overheat_protection_assert_based_test
+    COMMAND engine_overheat_protection_assert_based_test
+)
+
+add_test(
+    NAME engine_overheat_protection_print_based_test
+    COMMAND engine_overheat_protection_print_based_test
+)
