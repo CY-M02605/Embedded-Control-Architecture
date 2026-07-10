@@ -79,21 +79,21 @@ int main() {
 
     std::cout << "============ Gear Display Facade Test ============" << std::endl;
 
-    // 1、Create the manager
+    // 1. Create the manager
     framework::Manager manager;
 
-    // 2、Create raw input signals
+    // 2. Create raw input signals
     gear_display_facade::AcGearPositionSignal ac_gear_position_signal(0, signals::ValidityStatus::VALID);
     gear_display_facade::AcIsEcoModeSignal ac_is_eco_mode_signal(false, signals::ValidityStatus::VALID);
 
-    // 3、Create GearDisplayFacade
+    // 3. Create GearDisplayFacade
     gear_display_facade::GearDisplayFacade Facade(
         ac_gear_position_signal,
         ac_is_eco_mode_signal,
         manager
     ); 
 
-    // 4、Set raw input signal
+    // 4. Set raw input signal
     struct GearInputs {
         int raw_gear;
         signals::ValidityStatus input_validity;
