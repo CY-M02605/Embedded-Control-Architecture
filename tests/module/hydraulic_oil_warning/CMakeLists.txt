@@ -1,10 +1,32 @@
-cmake_minimum_required(VERSION 3.10) # Require CMake 3.10 or higher
-project(mini_control_sim_rebuild LANGUAGES CXX) # Project name, using C++
-set(CMAKE_CXX_STANDARD 11) # Use C++11 standard
+cmake_minimum_required(VERSION 3.16) # Require CMake 3.10 or higher
 
-add_executable(mini_control_sim_rebuild
-    src/main.cpp
-    src/modules/hydraulic_oil_warning.cc
+project(hydraulic_oil_warning_tests LANGUAGES CXX) # Project name, using C++
+
+set(CMAKE_CXX_STANDARD 11) # Use C++11 standard
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(PROJECT_ROOT_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../..
 )
 
-target_include_directories(mini_control_sim_rebuild PRIVATE src)
+enable_testing()
+
+add_executable(
+    hydraulic_oil_warning_print_based_test
+    print_based_tests.cpp
+    ${PROJECT_ROOT_DIR}/modules/hydraulic_oil_warning/src/hydraulic_oil_warning.cc
+)
+
+target_include_directories(
+    hydraulic_oil_warning_print_based_test 
+    PRIVATE
+    ${PROJECT_ROOT_DIR}/framework
+    ${PROJECT_ROOT_DIR}/signals
+    ${PROJECT_ROOT_DIR}/utility
+    ${PROJECT_ROOT_DIR}/module/hydraulic_oil_warning/include
+)
+
+add_test(
+    NAME HydraulicOilWarningPrintBasedTest
+    COMMAND hydraulic_oil_warning_print_based_test
+)
