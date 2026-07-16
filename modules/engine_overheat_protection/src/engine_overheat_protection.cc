@@ -16,7 +16,7 @@ EngineOverheatProtection::EngineOverheatProtection(
     oil_temp_(oil_temp),is_engine_running_(is_engine_running),
     is_overheat_protected_output_(false, signals::ValidityStatus::VALID),
     torque_limit_output_(0.0f, signals::ValidityStatus::INVALID),
-    fan_request_output_(0.0, signals::ValidityStatus::INVALID),
+    fan_request_output_(0.0f, signals::ValidityStatus::INVALID),
     increment_timer_(config.increment_timer_config),
     torque_lookup_table_(
         config.torque_lookup_table_points, 
@@ -105,16 +105,25 @@ void EngineOverheatProtection::Update()
 
         if (!is_engine_running_.GetValue()) {
 
+            if (oil_temp_.GetValue() > config_.oil_low_threshold) {
+
+                state_ = EngineOverheatProtectionState::AFTER_RUN_COOLING;
+
+            } else {
+
+                state_ = EngineOverheatProtectionState::IDLE;
+
+            }
+
             alarm_output = false;
             alarm_validation = signals::ValidityStatus::VALID;
 
-            t_d_output = 0.0f;
+            t_d_output = 100.0f;
             t_d_validation = signals::ValidityStatus::VALID;
 
             fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
             fan_validation = signals::ValidityStatus::VALID;
 
-            state_ = EngineOverheatProtectionState::IDLE;
             increment_timer_.Clear();
 
             break;
@@ -128,7 +137,7 @@ void EngineOverheatProtection::Update()
             t_d_output = 100.0f;
             t_d_validation = signals::ValidityStatus::VALID;
 
-            fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
+            fan_output = 20.0f;
             fan_validation = signals::ValidityStatus::VALID;
 
             state_ = EngineOverheatProtectionState::IDLE;
@@ -142,7 +151,8 @@ void EngineOverheatProtection::Update()
         if (increment_timer_.IsTimeUp()) {
 
             alarm_output = true;
-            alarm_validation = signals::ValidityStatus::VALID;
+
+            t_d_output = torque_lookup_table_.LookupTable(oil_temp_.GetValue());
 
             state_ = EngineOverheatProtectionState::PROTECTED;
             increment_timer_.Clear();
@@ -150,13 +160,15 @@ void EngineOverheatProtection::Update()
         } else {
 
             alarm_output = false;
-            alarm_validation = signals::ValidityStatus::VALID;
+
+            t_d_output = 100.0f;
 
             state_ = EngineOverheatProtectionState::COUNTING;
 
         }
 
-        t_d_output = torque_lookup_table_.LookupTable(oil_temp_.GetValue());
+        alarm_validation = signals::ValidityStatus::VALID;
+        
         t_d_validation = signals::ValidityStatus::VALID;
 
         fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
@@ -185,22 +197,117 @@ void EngineOverheatProtection::Update()
         if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
 
             alarm_output = false;
-            alarm_validation = signals::ValidityStatus::VALID;
+
+            t_d_output = 100.0f;
+
+            fan_output = 20.0f;
+
+            state_ = EngineOverheatProtectionState::IDLE;
+
+        } else if (!is_engine_running_.GetValue() && oil_temp_.GetValue() > config_.oil_low_threshold) {
+
+            alarm_output = false;
+
+            t_d_output = 100.0f;
+
+            fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
+
+            state_ = EngineOverheatProtectionState::AFTER_RUN_COOLING;
+        
+        } else {
+
+            alarm_output = true;
+
+            t_d_output = torque_lookup_table_.LookupTable(oil_temp_.GetValue());
+            
+            fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
+
+            state_ = EngineOverheatProtectionState::PROTECTED;
+        
+        }
+
+        alarm_validation = signals::ValidityStatus::VALID;
+
+        t_d_validation = signals::ValidityStatus::VALID;
+
+        fan_validation = signals::ValidityStatus::VALID;
+
+        increment_timer_.Clear();
+
+        break;
+
+    case EngineOverheatProtectionState::AFTER_RUN_COOLING:
+        if (!is_engine_running_.IsValid() || !oil_temp_.IsValid()) {
+
+            alarm_output = false;
+            alarm_validation = signals::ValidityStatus::INVALID;
+
+            t_d_output = 0.0f;
+            t_d_validation = signals::ValidityStatus::INVALID;
+
+            fan_output = 0.0f;
+            fan_validation = signals::ValidityStatus::INVALID;
 
             state_ = EngineOverheatProtectionState::IDLE;
             increment_timer_.Clear();
 
-        } else {
-
-            alarm_output = true;
-            alarm_validation = signals::ValidityStatus::VALID;
-        
+            break;
         }
 
-        t_d_output = torque_lookup_table_.LookupTable(oil_temp_.GetValue());
+        if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
+
+            alarm_output = false;
+        
+            t_d_output = 100.0f;
+
+            fan_output = 20.0f;
+
+            state_ = EngineOverheatProtectionState::IDLE;
+            increment_timer_.Clear();
+
+        } else if (is_engine_running_.GetValue() && oil_temp_.GetValue() >= config_.oil_high_threshold) {
+
+            increment_timer_.Update();
+
+            if (increment_timer_.IsTimeUp()) {
+
+                alarm_output = true;
+            
+                t_d_output = torque_lookup_table_.LookupTable(oil_temp_.GetValue());
+
+                fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
+
+                state_ = EngineOverheatProtectionState::PROTECTED;
+                increment_timer_.Clear();
+
+            } else {
+
+                alarm_output = false;
+
+                t_d_output = 100.0f;
+
+                fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
+
+                state_ = EngineOverheatProtectionState::AFTER_RUN_COOLING;
+
+            }
+        } else {
+
+            alarm_output = false;
+
+            t_d_output = 100.0f;
+
+            fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
+
+            state_ = EngineOverheatProtectionState::AFTER_RUN_COOLING;
+            increment_timer_.Clear();
+
+        }
+
+        alarm_validation = signals::ValidityStatus::VALID;
+        
         t_d_validation = signals::ValidityStatus::VALID;
 
-        fan_output = fan_lookup_table_.LookupTable(oil_temp_.GetValue());
         fan_validation = signals::ValidityStatus::VALID;
 
         break;

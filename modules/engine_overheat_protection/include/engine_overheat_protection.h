@@ -21,7 +21,7 @@ enum class EngineOverheatProtectionState{
     IDLE,
     COUNTING,
     PROTECTED,
-    // AFTER_RUN_COOLING
+    AFTER_RUN_COOLING
 };
 
 class EngineOverheatProtection: public framework::ModuleInterface {
