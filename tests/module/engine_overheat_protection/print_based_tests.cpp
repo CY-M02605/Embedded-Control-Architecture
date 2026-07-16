@@ -169,9 +169,9 @@ int main() {
 
         std::cout << "cycle: " << i + 1
                   << " | oil_temp_value: " << oil_temp.GetValue()
-                  << " | oil_temp_validity" << ValidityStr(oil_temp.GetValidity())
+                  << " | oil_temp_validity: " << ValidityStr(oil_temp.GetValidity())
                   << " | engine_running_value: " << is_engine_running.GetValue()
-                  << " | engine_running_validity" << ValidityStr(is_engine_running.GetValidity())
+                  << " | engine_running_validity: " << ValidityStr(is_engine_running.GetValidity())
                   << "\n"
                   << " | protected_value: "
                   << eop_test.IsOverheatProtectedRef().GetValue()
