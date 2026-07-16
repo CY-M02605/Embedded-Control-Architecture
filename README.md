@@ -230,10 +230,16 @@ It activates overheat protection when the oil temperature remains above the conf
 stateDiagram-v2
     [*] --> IDLE
 
-    IDLE --> COUNTING: Engine running and oil temperature is above high threshold
-    COUNTING --> PROTECTED: Timer elapsed
-    COUNTING --> IDLE: Oil temperature is below low threshold
-    PROTECTED --> IDLE: Oil temperature is below low threshold
+    IDLE --> COUNTING: Engine running && oil temperature >= high threshold
+
+    COUNTING --> PROTECTED: Timer elapsed && oil temperature > low threshold
+    COUNTING --> IDLE: Oil temperature <= low threshold
+
+    PROTECTED --> IDLE: Oil temperature <= low threshold
+    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped && oil temperature >= high threshold
+
+    AFTER_RUN_COOLING --> IDLE: Oil temperature <= low threshold
+    AFTER_RUN_COOLING --> PROTECTED: Engine is running && oil temperature >= high threshold
 ```
 
 ### Utility
