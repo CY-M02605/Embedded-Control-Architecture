@@ -1,15 +1,31 @@
-cmake_minimum_required(VERSION 3.10)
-project(instantiation_practice LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.16)
+
+project(instantiation_practice_tests LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(instantiation_practice
-    main.cpp
+set(PROJECT_ROOT_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../..
 )
 
-target_include_directories(instantiation_practice PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../assembly
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../framework
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../modules/instantiation_practice/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../signals
+enable_testing()
+
+add_executable(
+    instantiation_practice_print_based_tests
+    print_based_tests.cpp
+)
+
+target_include_directories(
+    instantiation_practice_print_based_tests
+    PRIVATE
+    ${PROJECT_ROOT_DIR}/framework
+    ${PROJECT_ROOT_DIR}/signals
+    ${PROJECT_ROOT_DIR}/utility
+    ${PROJECT_ROOT_DIR}/modules/instantiation_practice/include
+)
+
+add_test(
+    NAME InstantiationPracticeTests
+    COMMAND instantiation_practice_print_based_tests
 )
