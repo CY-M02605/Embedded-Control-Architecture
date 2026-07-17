@@ -13,7 +13,7 @@
   #include "signal.h"
 
   namespace vehicle_speed_control {
-  class VehicleSpeed: public framework::ModuleInterface {
+  class VehicleSpeedControl: public framework::ModuleInterface {
     public:
         VehicleSpeedControl (
             const signals::FloatSignal& engine_rotation,
