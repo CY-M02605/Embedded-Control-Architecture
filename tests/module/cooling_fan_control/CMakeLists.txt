@@ -14,8 +14,8 @@ enable_testing()
 add_executable(
     cooling_fan_control_print_bansed_tests
     print_based_tests.cpp
-    ${PROJECT_ROOT_DIR}/modules/wl_cooling_fan_control/src/cooling_fan_control.cc
-    ${PROJECT_ROOT_DIR}/modules/wl_cooling_fan_control/src/coolingFanControl.c
+    ${PROJECT_ROOT_DIR}/modules/cooling_fan_control/src/cooling_fan_control.cc
+    ${PROJECT_ROOT_DIR}/modules/cooling_fan_control/src/coolingFanControl.c
 )
 
 target_include_directories(
