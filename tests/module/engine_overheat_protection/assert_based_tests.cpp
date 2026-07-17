@@ -208,7 +208,7 @@ void TestCountingState() {
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 39.8f, signals::ValidityStatus::VALID},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
-        {false, signals::ValidityStatus::VALID, 0.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 39.8f, signals::ValidityStatus::VALID},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
@@ -331,6 +331,131 @@ void TestProtectedState() {
         assert(FloatEqual(eop_test.FanRequestRef().GetValue(), scenario_output[i].fan_request_output));
         assert(eop_test.FanRequestRef().GetValidity() == scenario_output[i].fan_request_validity);
     }
+}
+
+void TestAfterRunCoolingState() {
+    framework::Manager manager;
+
+    engine_overheat_protection::EngineOverheatProtection::Config create_after_run_cooling_state_config = CreateDefaultConfig();
+
+    signals::FloatSignal oil_temp = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
+    signals::BoolSignal is_engine_running = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
+
+    engine_overheat_protection::EngineOverheatProtection eop_test (
+        create_after_run_cooling_state_config,
+        oil_temp,
+        is_engine_running,
+        manager
+    );
+    
+    struct CycelInput {
+        float oil_temp;
+        signals::ValidityStatus oil_temp_validity;
+        bool is_engine_running;
+        signals::ValidityStatus is_engine_running_validity;
+    };
+
+    struct CycleOutput {
+        bool is_overheat_protecte_output;
+        signals::ValidityStatus is_overheat_protected_validity;
+        float torque_limit;
+        signals::ValidityStatus torque_limit_validity;
+        float fan_request_output;
+        signals::ValidityStatus fan_request_validity;
+    };
+
+    CycelInput scenario_input[] = {
+        // entrance of after run cooling 1
+        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.1f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.2f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.3f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.4f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},
+        // if (!is_engine_running_.IsValid() || !oil_temp_.IsValid())
+        {80.0f, signals::ValidityStatus::INVALID, true, signals::ValidityStatus::VALID},
+        {80.1f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::INVALID},
+        {80.2f, signals::ValidityStatus::INVALID, true, signals::ValidityStatus::INVALID},
+        
+        // entrance of after run cooling 2
+        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.1f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.2f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.3f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.4f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},
+        // if (oil_temp_.GetValue() <= config_.oil_low_threshold)
+        {80.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+
+        // entrance of after run cooling 3
+        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.1f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.2f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.3f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.4f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},
+        {90.5f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},
+        // if (is_engine_running_.GetValue() && oil_temp_.GetValue() >= config_.oil_high_threshold && !increment_timer_.IsTimeUp())
+        {90.6f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        {90.7f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+        // if (increment_timer_.IsTimeUp())
+        {90.8f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},
+    };
+
+    CycleOutput scenario_output[] = {
+        // entrance of after run cooling 1
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.25f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.5f, signals::ValidityStatus::VALID},
+        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.75f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 41.0f, signals::ValidityStatus::VALID},
+        // if (!is_engine_running_.IsValid() || !oil_temp_.IsValid())
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID},
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID},
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID},
+
+        // entrance of after run cooling 2
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.25f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.5f, signals::ValidityStatus::VALID},
+        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.75f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 41.0f, signals::ValidityStatus::VALID},
+        // if (oil_temp_.GetValue() <= config_.oil_low_threshold)
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID},
+
+        // entrance of after run cooling 3
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.25f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.5f, signals::ValidityStatus::VALID},
+        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.75f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 41.0f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 41.25f, signals::ValidityStatus::VALID},
+        // if (is_engine_running_.GetValue() && oil_temp_.GetValue() >= config_.oil_high_threshold && !increment_timer_.IsTimeUp())
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 41.5f, signals::ValidityStatus::VALID},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 41.75f, signals::ValidityStatus::VALID},
+        // if (increment_timer_.IsTimeUp())
+        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 42.0f, signals::ValidityStatus::VALID},
+    };
+
+    size_t size_of_input = sizeof(scenario_input) / sizeof(scenario_input[0]);
+    size_t size_of_output = sizeof(scenario_output) / sizeof(scenario_output[0]);
+
+    assert(size_of_input == size_of_output);
+
+    for (size_t i = 0; i < size_of_input; ++i) {
+        oil_temp.SetValue(scenario_input[i].oil_temp);
+        oil_temp.SetValidity(scenario_input[i].oil_temp_validity);
+        is_engine_running.SetValue(scenario_input[i].is_engine_running);
+        is_engine_running.SetValidity(scenario_input[i].is_engine_running_validity);
+
+        manager.UpdateAll();
+
+        assert(eop_test.IsOverheatProtectedRef().GetValue() == scenario_output[i].is_overheat_protecte_output);
+        assert(eop_test.IsOverheatProtectedRef().GetValidity() == scenario_output[i].is_overheat_protected_validity);
+        assert(FloatEqual(eop_test.FanRequestRef().GetValue(), scenario_output[i].fan_request_output));
+        assert(eop_test.FanRequestRef().GetValidity() == scenario_output[i].fan_request_validity);
+        assert(FloatEqual(eop_test.TorqueLimitRef().GetValue(), scenario_output[i].torque_limit));
+        assert(eop_test.TorqueLimitRef().GetValidity() == scenario_output[i].fan_request_validity);
+
+    }
+
 }
 
 void TestFromIdleToProtected() {
@@ -567,6 +692,28 @@ int main() {
 
     std::cout << "Protected state test elapsed time: "
               << protected_state_elapsed_us
+              << " us"
+              << std::endl;
+
+    std::cout << std::endl;
+
+    const auto after_run_cooling_state_start_time = std::chrono::steady_clock::now();
+
+    std::cout << "============ Engine Overheat Protection After Run Cooling State Tests Starting ============" << std::endl;
+
+    TestAfterRunCoolingState();
+
+    std::cout << "============ Engine Overheat Protection After Run Cooling State Tests Ending ============" << std::endl;
+
+    const auto after_run_cooling_state_end_time = std::chrono::steady_clock::now();
+
+    const auto after_run_cooling_state_elapsed_us = 
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            after_run_cooling_state_end_time - after_run_cooling_state_start_time
+        ).count();
+
+    std::cout << "All states test elapsed time: "
+              << after_run_cooling_state_elapsed_us
               << " us"
               << std::endl;
 
