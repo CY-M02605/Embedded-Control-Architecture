@@ -62,24 +62,23 @@ Embedded-Control-Architecture/
 |   |   └── src/
 |   |       └── hydraulic_oil_warning.cc
 |   ├── instantiation_practice/
+|   |   └── include/
+|   |       ├── instantiation_practice.h
+|   |       └── speed_monitor.h
+|   ├── cooling_fan_control/
 |   |   ├── include/
-|   |   |   ├── instantiation_practice.h
-|   |   |   └── speed_monitor.h
+|   |   |   ├── cooling_fan_control.h
+|   |   |   └── coolingFanControl.h
 |   |   └── src/
-|   ├── wl_cooling_fan_control/
+|   |       ├── cooling_fan_control.cc
+|   |       └── coolingFanControl.cc
+|   ├── vehicle_speed_speed/
 |   |   ├── include/
-|   |   |   ├── wl_cooling_fan_control.h
-|   |   |   └── wlCoolingFanControl.h
+|   |   |   ├── vehicle_speed_speed.h
+|   |   |   └── vehicleSpeedControl.h
 |   |   └── src/
-|   |       ├── wl_cooling_fan_control.cc
-|   |       └── wlCoolingFanControl.cc
-|   ├── wl_vehicle_speed/
-|   |   ├── include/
-|   |   |   ├── wl_vehicle_speed.h
-|   |   |   └── wlVehicleSpeed.h
-|   |   └── src/
-|   |       ├── wl_vehicle_speed.cc
-|   |       └── wlVehicleSpeed.cc
+|   |       ├── vehicle_speed_control.cc
+|   |       └── vehicleSpeedControl.cc
 |   ├── engine_overheat_protection/
 |   |   ├── include/
 |   |   |   └── engine_overheat_protection.h
@@ -97,23 +96,23 @@ Embedded-Control-Architecture/
 |   ├── module/
 |   |   ├── gear_display_facade/
 |   |   |   ├── CMakeLists.txt
-|   |   |   └── main.cpp
+|   |   |   └── print_based_tests.cpp
 |   |   ├── hydraulic_oil_warning/
 |   |   |   ├── CMakeLists.txt
-|   |   |   └── main.cpp
+|   |   |   └── print_based_tests.cpp
 |   |   ├── instantiation_practice/
 |   |   |   ├── CMakeLists.txt
-|   |   |   └── main.cpp
+|   |   |   └── print_based_tests.cpp
 |   |   ├── wl_cooling_fan_control/
 |   |   |   ├── CMakeLists.txt
-|   |   |   └── main.cpp
+|   |   |   └── print_based_tests.cpp
 |   |   └── wl_vehicle_speed/
 |   |   |   ├── CMakeLists.txt
-|   |   |   └── main.cpp
-|   |   └── engine_overheat_protection/
-|   |   |   ├── CMakeLists.txt
-|   |   |   ├── assert_based_tests.cpp
 |   |   |   └── print_based_tests.cpp
+|   |   └── engine_overheat_protection/
+|   |       ├── CMakeLists.txt
+|   |       ├── assert_based_tests.cpp
+|   |       └── print_based_tests.cpp
 |   └── unit/
 |       ├── CMakeLists.txt
 |       ├── test_hysteresis.cpp
@@ -146,6 +145,8 @@ Embedded-Control-Architecture/
 |           └── utility/
 |               ├── hysteresis.h
 |               └── increment_timer.h
+├── .gitignore
+├── CMakeLists.txt
 └── README.md
 ```
 
@@ -159,34 +160,26 @@ The project is organized into several logical layers.
 
 The `framework` layer provides the basic execution structure.
 
--   `ModuleInterface` defines a common interface for control modules.
--   `Manager` stores registered modules.
--   `Manager::UpdateAll()` calls the `Update()` function of every registered module.
-
-Example:
-
-``` cpp
-class ModuleInterface {
-public:
-    virtual ~ModuleInterface() = default;
-    virtual void Update() = 0;
-};
-```
-
-This allows different modules to be executed through the same interface.
+-   `ModuleInterface`
+        As a father class (interface) for each module logic, it defines a common interface for control modules.
+        It includes destructor ~ModuleInterface() function, initializer Init() function and the entrance method of each module Update() function.
+        The PC version is same with Arduino version.
+-   `Manager`
+        It stores all registered modules throuth RegisterModule() function, and update in batches throuth UpdateAll() function. The content, in PC version, is a vector; in Arduino version, is a fixed-length array. In UpdateAll() function, the Update() function of every registered module is called.
+        This allows different modules to be executed through the same interface.
 
 ------------------------------------------------------------------------
 
 ### Signals
 
-The `signals` layer provides typed signal objects for passing data between the application layer and control modules.
+The `signals` layer provides typed signal objects for passing data between the application layer, such as PC test code or Arduino sketches, and control modules.
 
 A signal contains:
 
 -   a value
 -   a validity status
 
-The validity status allows a module to distinguish between a real input value and unavailable or invalid data.
+The validity status allows a module to distinguish between a usable input data (valid) and an unavailable input data (invalid).
 
 The input source can later be changed without modifying the control module. For example, the oil-temperature signal could come from:
 
@@ -203,7 +196,12 @@ The `modules` layer contains application-specific control logic.
 
 Examples include:
 
--   hydraulic oil-temperature warning
+-   engine_overheat_protection
+-   gear_display_facade
+-   hydraulic_oil_warning
+-   instantiation_practice
+-   cooling_fan_control
+-   vehicle_speed_control
 -   wheel-loader cooling-fan control
 -   vehicle-speed calculation
 -   gear-display facade
