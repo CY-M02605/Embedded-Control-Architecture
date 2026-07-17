@@ -103,10 +103,10 @@ Embedded-Control-Architecture/
 |   |   ├── instantiation_practice/
 |   |   |   ├── CMakeLists.txt
 |   |   |   └── print_based_tests.cpp
-|   |   ├── wl_cooling_fan_control/
+|   |   ├── cooling_fan_control/
 |   |   |   ├── CMakeLists.txt
 |   |   |   └── print_based_tests.cpp
-|   |   └── wl_vehicle_speed/
+|   |   └── vehicle_speed/
 |   |   |   ├── CMakeLists.txt
 |   |   |   └── print_based_tests.cpp
 |   |   └── engine_overheat_protection/
@@ -202,11 +202,6 @@ Examples include:
 -   instantiation_practice
 -   cooling_fan_control
 -   vehicle_speed_control
--   wheel-loader cooling-fan control
--   vehicle-speed calculation
--   gear-display facade
--   speed monitoring
--   engine_overheat_protection
 
 A typical module:
 
@@ -214,7 +209,9 @@ A typical module:
 2.  processes control logic in `Update()`
 3.  writes one or more output signals
 
-The Arduino `OilTempWarning` module reads a temperature signal and produces a warning signal.
+The Arduino `OilTempWarning` module reads a temperature signal and produces a warning signal, and dirves a fan output.
+
+I plan to realize the function on Arduino for engine overheat protection next step.
 
 #### Engine Overheat Protection
 
