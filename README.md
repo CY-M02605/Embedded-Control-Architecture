@@ -120,31 +120,36 @@ Embedded-Control-Architecture/
 |       └── test_lookup_table_1d.cpp
 |
 ├── Arduino_project/
-|   └── OilTempWarningDemo/
-|       ├── OilTempWarningDemo.ino
-|       ├── version management/
-|       |   ├── 1/
-|       |   |   └── OilTempWarningDemo.ino
-|       |   ├── 2/
-|       |   |   └── OilTempWarningDemo.ino
-|       |   ├── 3/
-|       |   |   └── OilTempWarningDemo.ino
+|   ├── OilTempWarningDemo/
+|   |   ├── OilTempWarningDemo.ino
+|   |   ├── Version Managerment/
+|   |   |   ├── 1/
+|   |   |   |   └── OilTempWarningDemo.ino
+|   |   |   └── 2/
+|   |   |       └── OilTempWarningDemo.ino
+|   |   |
+|   |   └── src/
+|   |       ├── framework/
+|   |       |   ├── manager.h
+|   |       |   └── module_interface.h
+|   |       ├── modules/
+|   |       |
+|   |       ├── signals/
+|   |       |   └── signal.h
+|   |       └── utility/
+|   |           ├── hysteresis.h
+|   |           └── increment_timer.h
+|   |
+|   └── EngineOverheatProtection/
+|       ├── EngineOverheatProtection.ino
+|       ├── Version Managerment/
 |       |
 |       └── src/
 |           ├── framework/
-|           |   ├── manager.h
 |           |   └── module_interface.h
 |           ├── modules/
-|           |   ├── oil_temp_warning.h
-|           |   ├── oil_temp_warning.cpp
-|           |   ├──  fan_cooling_control.h
-|           |   ├──  fan_cooling_control.cpp
-|           |
 |           ├── signals/
-|           |   └── signal.h
 |           └── utility/
-|               ├── hysteresis.h
-|               └── increment_timer.h
 ├── .gitignore
 ├── CMakeLists.txt
 └── README.md
