@@ -31,3 +31,7 @@ if you want to give up your modification on some files, execute those commands b
     git add the_file_you_want_to_push
     git commit -m "update commit"
     git push
+
+if you want to drawback an "add" command, use the command below:
+    git restore --staged "your addded content"
+Do not forget to type "git status" for checking the newest status of your repository after drawbacking.
