@@ -149,7 +149,10 @@ Embedded-Control-Architecture/
 |           |   └── module_interface.h
 |           ├── modules/
 |           ├── signals/
+|           |   └── signal.h
 |           └── utility/
+|               ├── lookup_table_1d.h
+|               └── increment_timer.h
 ├── .gitignore
 ├── CMakeLists.txt
 └── README.md
