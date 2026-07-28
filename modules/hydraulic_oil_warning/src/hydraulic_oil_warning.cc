@@ -24,7 +24,7 @@ void HydraulicOilWarningFunction::Update() {
     switch (status_)
     {
     case STATE_OFF:
-        if (oil_temp_high_.GetState() == utility::Hysteresis::ON && is_diag_normal_.GetValue()) {
+        if (oil_temp_high_.GetState() == signals::OnOffStatus::ON && is_diag_normal_.GetValue()) {
             status_ = STATE_ON;
             display_timer_.Clear();
             warning_lamp_.Set(signals::OnOffStatus::ON, signals::ValidityStatus::VALID);
@@ -36,7 +36,7 @@ void HydraulicOilWarningFunction::Update() {
     case STATE_ON:
         display_timer_.Update();
         if (!is_diag_normal_.GetValue() 
-            || (oil_temp_high_.GetState() != utility::Hysteresis::ON && display_timer_.IsTimeUp())) {
+            || (oil_temp_high_.GetState() != signals::OnOffStatus::ON && display_timer_.IsTimeUp())) {
             status_ = STATE_OFF;
             warning_lamp_.Set(signals::OnOffStatus::OFF, signals::ValidityStatus::VALID);
         } else {
