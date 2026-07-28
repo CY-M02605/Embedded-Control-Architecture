@@ -37,11 +37,14 @@ class Hysteresis {
             }
         }
 
+        signals::OnOffStatus GetState() const {
+            return status_;
+        }
+
 
     private:
-        // Create a reference member.
         const Config config_;
-        signals::OnOffStatus& status_;
+        signals::OnOffStatus status_;
 
 };
 }   // namespace utility
