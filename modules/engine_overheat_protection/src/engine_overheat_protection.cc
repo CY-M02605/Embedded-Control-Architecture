@@ -12,7 +12,7 @@ EngineOverheatProtection::EngineOverheatProtection(
     const Config& config,
     const signals::FloatSignal& oil_temp,
     const signals::BoolSignal& is_engine_running,
-    framework::Manager &manager) : config_(config),
+    framework::Manager& manager) : config_(config),
     oil_temp_(oil_temp),is_engine_running_(is_engine_running),
     is_overheat_protected_output_(false, signals::ValidityStatus::VALID),
     torque_limit_output_(0.0f, signals::ValidityStatus::INVALID),
