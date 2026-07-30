@@ -35,3 +35,21 @@ if you want to give up your modification on some files, execute those commands b
 if you want to drawback an "add" command, use the command below:
     git restore --staged "your addded content"
 Do not forget to type "git status" for checking the newest status of your repository after drawbacking.
+
+if you want to delete a local branch, please use
+    git branch -d "sub-branch"
+    or
+    git branch -D "sub-branch" --- This is forced deletion
+
+if you want to delete a origin branch on repository, please use
+    git push origin --delete "sub-branch"
+
+if you want to check the submition difference between main and new branch, please use
+    git diff main.."sub-branch"
+
+if you want create a new branch, please use
+    git switch -c "sub-branch name"
+
+if you want merge your sub branch to main, please use
+    git switch "your sub-branch"
+    git merge main
