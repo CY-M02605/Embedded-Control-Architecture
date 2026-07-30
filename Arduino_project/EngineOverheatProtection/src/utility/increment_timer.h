@@ -16,7 +16,7 @@ class IncrementTimer {
             std::size_t threshold_time;
         };
 
-        explicit IncrementTimer(const Config config):
+        explicit IncrementTimer(const Config& config):
             config_(config), count_(0) {}
 
         void Update() {
