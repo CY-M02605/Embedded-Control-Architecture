@@ -7,7 +7,7 @@
 #ifndef MODULE_INTERFACE_H
 #define MODULE_INTERFACE_H
 
-namespace module_interafce {
+namespace framework {
 class ModuleInterface {
     public:
         virtual ~ModuleInterface() {}
