@@ -11,7 +11,7 @@
 
 #include <vector>
 
-namespace manager {
+namespace framework {
 class Manager {
     public:
         // void RegisterModule(module_interafce::ModuleInterface& module) {
@@ -20,7 +20,7 @@ class Manager {
 
         Manager(): count_(0) {}
 
-        void RegisterModule(module_interafce::ModuleInterface* module) {
+        void RegisterModule(framework::ModuleInterface* module) {
             if (count_ < MAX_SIZE) {
                 modules_[count_] = module;
                 count_++;
@@ -37,7 +37,7 @@ class Manager {
         // std::vector<module_interafce::ModuleInterface*> modules_;
 
         static const int MAX_SIZE = 10;
-        module_interafce::ModuleInterface* modules_[MAX_SIZE];
+        framework::ModuleInterface* modules_[MAX_SIZE];
         int count_;
 };
 }
