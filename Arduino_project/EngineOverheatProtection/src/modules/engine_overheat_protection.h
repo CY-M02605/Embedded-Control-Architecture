@@ -19,6 +19,7 @@
 namespace engine_overheat_protection {
 
 enum class EngineOverheatProtectionState {
+    STOP,
     IDLE,
     COUNTING,
     PROTECTED,
