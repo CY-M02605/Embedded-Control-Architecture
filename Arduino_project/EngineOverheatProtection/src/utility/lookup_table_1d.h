@@ -12,17 +12,17 @@
 namespace utility {
 
 template <typename T>
-class Lookup_Table_1D {
+class LookupTable1D {
     public:
         struct Points {
             T input;
             T output;
         };
 
-    LookupTable1D(const Points points, std::size_t size)
+    LookupTable1D(const Points* points, std::size_t size)
      : points_(points), size_(size) {}
 
-    T LookupTable(T input) {
+    T LookupTable(T input) const {
         if (input < points_[0].input) {
             return points_[0].output;
         } else if (input >= points_[size_ - 1].input) {
@@ -43,7 +43,7 @@ class Lookup_Table_1D {
             }
         }
 
-        return points_[size_ - 1];
+        return points_[size_ - 1].output;
     }
 
     private:
