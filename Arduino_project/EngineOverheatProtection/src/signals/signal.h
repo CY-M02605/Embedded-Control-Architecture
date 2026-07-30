@@ -7,6 +7,8 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
+namespace signals {
+
 enum class OnOffStatus {
     ON,
     OFF
@@ -17,7 +19,6 @@ enum class ValidityStatus {
     INVALID
 };
 
-namespace signal {
 template <typename T>
 class Signal {
     public:
