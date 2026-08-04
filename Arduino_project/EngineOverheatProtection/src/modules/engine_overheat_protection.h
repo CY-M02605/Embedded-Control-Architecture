@@ -33,9 +33,9 @@ public:
         float oil_low_threshold;
         utility::IncrementTimer::Config increment_timer_config;
         const utility::LookupTable1D<float>::Points* torque_lookup_table_points;
-        const std::size_t torque_lookup_table_size;
+        std::size_t torque_lookup_table_size;
         const utility::LookupTable1D<float>::Points* fan_request_lookup_table_points;
-        const std::size_t fan_request_lookup_table_size;
+        std::size_t fan_request_lookup_table_size;
     };
 
     explicit EngineOverheatProtection(
@@ -53,6 +53,8 @@ public:
 
     const signals::FloatSignal& FanRequestRef() const;
 
+    const engine_overheat_protection::EngineOverheatProtectionState StateRef() const;
+
 private:
     const Config config_;
     const signals::FloatSignal& oil_temp_;
@@ -67,6 +69,8 @@ private:
     utility::IncrementTimer increment_timer_;
     utility::LookupTable1D<float> torque_lookup_table_;
     utility::LookupTable1D<float> fan_request_lookup_table_;
+
+    engine_overheat_protection::EngineOverheatProtectionState state_;
 
 };
 }

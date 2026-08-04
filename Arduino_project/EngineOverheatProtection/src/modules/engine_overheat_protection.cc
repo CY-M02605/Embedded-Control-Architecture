@@ -464,3 +464,7 @@ const signals::FloatSignal& EngineOverheatProtection::TorqueLimitRef() const {
 const signals::FloatSignal& EngineOverheatProtection::FanRequestRef() const {
     return fan_request_output_;
 }
+
+const engine_overheat_protection::EngineOverheatProtectionState EngineOverheatProtection::StateRef() const {
+    return state_;
+}
