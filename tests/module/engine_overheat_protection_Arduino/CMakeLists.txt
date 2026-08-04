@@ -18,7 +18,7 @@ add_executable(
 target_include_directories(
     engine_overheat_protection_Arduino_assert_based_test
     PRIVATE
-    ${PROJECT_ROOT_DIR}/Arduino_project/EngineOverheatProtection/include
+    ${PROJECT_ROOT_DIR}/Arduino_project/EngineOverheatProtection/modules
     ${PROJECT_ROOT_DIR}/Arduino_project/EngineOverheatProtection/src/framework
     ${PROJECT_ROOT_DIR}/Arduino_project/EngineOverheatProtection/src/signals
     ${PROJECT_ROOT_DIR}/Arduino_project/EngineOverheatProtection/src/utility
