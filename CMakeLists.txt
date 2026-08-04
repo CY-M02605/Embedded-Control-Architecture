@@ -21,6 +21,8 @@ add_executable(embedded_control_system
     modules/gear_display_facade/src/gear_display_facade.cc
     modules/hydraulic_oil_warning/src/hydraulic_oil_warning.cc
     modules/vehicle_speed_cooling/src/vehicle_speed_cooling.cc
+
+    Arduino_project/EngineOverheatProtection/src/modules/engine_overheat_protection.cc
 )
 
 target_include_directories(embedded_control_system 
@@ -34,4 +36,6 @@ target_include_directories(embedded_control_system
         modules/gear_display_facade/include
         modules/hydraulic_oil_warning/include
         modules/vehicle_speed_cooling/include
+
+        Arduino_project/EngineOverheatProtection/src/modules
 )
