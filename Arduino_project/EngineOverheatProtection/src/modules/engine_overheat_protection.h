@@ -10,7 +10,7 @@
 #include "../framework/manager.h"
 #include "../framework/module_interface.h"
 #include "../signals/signal.h"
-#include "../utility/hysteresis.h"
+// #include "../utility/hysteresis.h"
 #include "../utility/increment_timer.h"
 #include "../utility/lookup_table_1d.h"
 
@@ -69,8 +69,6 @@ private:
     utility::IncrementTimer increment_timer_;
     utility::LookupTable1D<float> torque_lookup_table_;
     utility::LookupTable1D<float> fan_request_lookup_table_;
-
-    engine_overheat_protection::EngineOverheatProtectionState state_;
 
 };
 }
