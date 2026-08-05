@@ -4,7 +4,7 @@
  * @date 2026-08-04
  */
 
-#include "Arduino_project/EngineOverheatProtection/src/modules/engine_overheat_protection.h"
+#include "modules/engine_overheat_protection.h"
 
 #include <iostream>
 #include <cmath>
@@ -12,6 +12,14 @@
 #include <cassert>
 
 using Table = utility::LookupTable1D<float>;
+
+bool FloatEqual (float a, float b, float tolerence = 0.001) {
+    return std::fabs(a - b) < tolerence;
+}
+
+const char* ValidityToStr(signals::ValidityStatus s) {
+    return s == signals::ValidityStatus::VALID? "VALID" : "INVALID";
+}
 
 const Table::Points oil_temp_fan_request_table[] = {
     {80.0f, 20.0f}, {90.0f, 40.0f}, {100.0f, 65.0f}, {105.0f, 80.0f}, {110.0f, 100.0f}, {115.0f, 100.0f}, {120.0f, 100.0f}
@@ -44,7 +52,7 @@ void InvalidTests() {
 
         float oil_temp_value;
         signals::ValidityStatus oil_temp_validity;
-        bool is_engine_running;
+        bool is_engine_running_value;
         signals::ValidityStatus is_engine_running_validity;
 
     };
@@ -62,13 +70,13 @@ void InvalidTests() {
 
     };
 
-    auto creae_default_config =  CreateDefaultConfig();
+    auto create_default_config =  CreateDefaultConfig();
 
     signals::FloatSignal oil_temp_input = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
     signals::BoolSignal is_engine_running_input = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
 
     engine_overheat_protection::EngineOverheatProtection eop_test (
-        creae_default_config,
+        create_default_config,
         oil_temp_input,
         is_engine_running_input,
         manager
@@ -115,7 +123,46 @@ void InvalidTests() {
         
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
         
-        {false, signals::ValidityStatus::VALID, 95.0f, signals::ValidityStatus::VALID, 80.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 80.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING},
         
     };
+
+    std::size_t size_of_input = sizeof(scenario_inputs) / sizeof(scenario_inputs[0]);
+    std::size_t size_of_output = sizeof(scenario_outputs) / sizeof(scenario_outputs[0]);
+
+    assert(size_of_output == size_of_input);
+
+    for (std::size_t i = 0; i < size_of_input; ++i) {
+        oil_temp_input.Set(scenario_inputs[i].oil_temp_value, scenario_inputs[i].oil_temp_validity);
+        is_engine_running_input.Set(scenario_inputs[i].is_engine_running_value, scenario_inputs[i].is_engine_running_validity);
+
+        manager.UpdateAll();
+
+        assert(eop_test.IsOverheatProtectedRef().GetValue() == scenario_outputs[i].is_overheat_protection_value);
+        assert(eop_test.IsOverheatProtectedRef().GetValidity() == scenario_outputs[i].is_overheat_protection_validity);
+        // std::cout << eop_test.TorqueLimitRef().GetValue() << " " << scenario_outputs[i].torque_limit_value << std::endl;
+        assert(FloatEqual(eop_test.TorqueLimitRef().GetValue(), scenario_outputs[i].torque_limit_value));
+        assert(eop_test.TorqueLimitRef().GetValidity() == scenario_outputs[i].torque_limit_validity);
+        assert(FloatEqual(eop_test.FanRequestRef().GetValue(), scenario_outputs[i].fan_request_value));
+        assert(eop_test.FanRequestRef().GetValidity() == scenario_outputs[i].fan_request_validity); 
+    }
+}
+
+void main() {
+    std::cout << "============ Engine Overheat Protection Tests ============" << std::endl;
+    std::cout << std::endl;
+    const auto stop_state_start_time = std::chrono::steady_clock::now();
+    std::cout << "============ Engine Overheat Protection Stop state Tests Starting ============" << std::endl;
+    InvalidTests();
+    std::cout << "============ Engine Overheat Protection Stop state Tests Ending ============" << std::endl;
+    const auto stop_state_end_time = std::chrono::steady_clock::now();
+    const auto stop_state_elapsed_us = 
+        std::chrono::duration_cast<std::chrono::microseconds> (
+            stop_state_end_time - stop_state_start_time
+        ).count();
+    std::cout << "Stop state test elapsed time: "
+              << stop_state_elapsed_us
+              << " us"
+              << std::endl;
+    std::cout << std::endl;
 }
