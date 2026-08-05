@@ -22,7 +22,7 @@ enum class ValidityStatus {
 template <typename T>
 class Signal {
     public:
-        signal()
+        Signal()
             : value_(), validity_(ValidityStatus::VALID) {};
 
         Signal(T value, ValidityStatus validity)
