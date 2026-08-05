@@ -26,16 +26,16 @@ class LookupTable1D {
         if (input < points_[0].input) {
             return points_[0].output;
         } else if (input >= points_[size_ - 1].input) {
-            return points_[size - 1].output;
+            return points_[size_ - 1].output;
         } else {
             std::size_t count;
-            for (count = 0; count < size_; ++count) {
-                if (input >= points_[count].input && input <= points_[count].input) {
+            for (count = 0; count < size_ - 1; ++count) {
+                if (input >= points_[count].input && input <= points_[count + 1].input) {
                     T lower_input = points_[count].input;
-                    T upper_input = points_[count].input;
+                    T upper_input = points_[count + 1].input;
 
                     T lower_output = points_[count].output;
-                    T upper_output = points_[count].output;
+                    T upper_output = points_[count + 1].output;
 
                     T ratio = (upper_output - lower_output) / (upper_input - lower_input);
                     return ratio * (input - lower_input) + lower_output;
