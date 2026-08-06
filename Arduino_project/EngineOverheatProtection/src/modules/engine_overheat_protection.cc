@@ -143,7 +143,7 @@ void EngineOverheatProtection::Update() {
             
             } else {
                 
-                torque_limit_output = 0.0f;
+                torque_limit_output = 100.0f;
                 
                 state_ = EngineOverheatProtectionState::AFTER_RUN_COOLING;
 
