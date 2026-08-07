@@ -236,38 +236,43 @@ stateDiagram-v2
     note right of STOP
         engine is stopped
         oil_temp < high threshold
+        (trigger: oil_temp <= low threshold)
     end note
     STOP --> IDLE: Engine is running
 
     note right of IDLE
         engine is runnig
         oil_temp < high threshold
+        (trigger: oil_temp <= low threshold)
     end note
-    IDLE --> COUNTING: oil temperature >= high threshold && increment timer < 3
-    IDLE --> STOP: engine is stopped
+    IDLE --> COUNTING: oil temperature >= high threshold
+    IDLE --> STOP: engine is stopped && && oil **temperature <= low threshold**
 
     note right of COUNTING
         engine is runnig
-        oil temperature >= high threshold
+        oil temperature > low threshold
+        (trigger: oil temperature >= high threshold)
         increment timer < 3
     end note
-    COUNTING --> PROTECTED: increment timer >= 3
-    COUNTING --> IDLE: Oil temperature <= low threshold
-    COUNTING --> AFTER_RUN_COOLING: engine is stopped
+    COUNTING --> PROTECTED: increment timer >= 3 && **oil temperature >= high threshold**
+    COUNTING --> IDLE: oil temperature <= low threshold
+    COUNTING --> AFTER_RUN_COOLING: engine is stopped && **oil temperature >= high threshold**
 
     note right of PROTECTED
         engine is runnig
-        oil temperature >= high threshold
+        oil temperature > low threshold
+        (trigger: oil_temp >= high threshold)
     end note
-    PROTECTED --> IDLE: Oil temperature <= low threshold
-    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped 
+    PROTECTED --> IDLE: oil temperature <= low threshold
+    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped && **oil temperature >= high threshold**
 
     note right of AFTER_RUN_COOLING
         engine is stopped
-        oil temperature >= high threshold
+        oil temperature > low threshold
+        (*trigger: oil_temp >= high threshold)
     end note
-    AFTER_RUN_COOLING --> IDLE: Oil temperature <= low threshold
-    AFTER_RUN_COOLING --> PROTECTED: Engine is running && increment timer >= 3
+    AFTER_RUN_COOLING --> IDLE: oil temperature <= low threshold
+    AFTER_RUN_COOLING --> COUNTING: Engine is running && **oil temperature >= high threshold**
 ```
 
 ### Utility
