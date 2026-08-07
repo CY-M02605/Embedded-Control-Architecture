@@ -231,18 +231,43 @@ It activates overheat protection when the oil temperature remains above the conf
 
 ```mermaid
 stateDiagram-v2
-    [*] --> IDLE
+    [*] --> STOP
 
-    IDLE --> COUNTING: Engine running && oil temperature >= high threshold
+    note right of STOP
+        engine is stopped
+        oil_temp < high threshold
+    end note
+    STOP --> IDLE: Engine is running
 
-    COUNTING --> PROTECTED: Timer elapsed && oil temperature > low threshold
+    note right of IDLE
+        engine is runnig
+        oil_temp < high threshold
+    end note
+    IDLE --> COUNTING: oil temperature >= high threshold && increment timer < 3
+    IDLE --> STOP: engine is stopped
+
+    note right of COUNTING
+        engine is runnig
+        oil temperature >= high threshold
+        increment timer < 3
+    end note
+    COUNTING --> PROTECTED: increment timer >= 3
     COUNTING --> IDLE: Oil temperature <= low threshold
+    COUNTING --> AFTER_RUN_COOLING: engine is stopped
 
+    note right of PROTECTED
+        engine is runnig
+        oil temperature >= high threshold
+    end note
     PROTECTED --> IDLE: Oil temperature <= low threshold
-    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped && oil temperature >= high threshold
+    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped 
 
+    note right of AFTER_RUN_COOLING
+        engine is stopped
+        oil temperature >= high threshold
+    end note
     AFTER_RUN_COOLING --> IDLE: Oil temperature <= low threshold
-    AFTER_RUN_COOLING --> PROTECTED: Engine is running && oil temperature >= high threshold
+    AFTER_RUN_COOLING --> PROTECTED: Engine is running && increment timer >= 3
 ```
 
 ### Utility
