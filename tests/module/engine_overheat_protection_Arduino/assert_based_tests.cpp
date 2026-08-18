@@ -74,11 +74,13 @@ void StopStateTest() {
 
     signals::FloatSignal oil_temp_input = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
     signals::BoolSignal is_engine_running_input = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
+    signals::BoolSignal clear_fault_request_input = signals::BoolSignal(false, signals::ValidityStatus::VALID);
 
     engine_overheat_protection::EngineOverheatProtection eop_test (
         create_default_config,
         oil_temp_input,
         is_engine_running_input,
+        clear_fault_request_input,
         manager
     );
 
@@ -94,19 +96,7 @@ void StopStateTest() {
         {70.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::INVALID}, // STOP
 
         {70.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // STOP
-        {80.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-
-        {70.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // STOP
-        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-
-        {70.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // STOP
-        {79.99f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},    // STOP
-
-        // if (!is_engine_running_.GetValue()) && if (oil_temp_.GetValue() < config_.oil_high_threshold)
-        {70.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},
-
-        // if (!is_engine_running_.GetValue()) && if (oil_temp_.GetValue() < config_.oil_high_threshold)
-        {105.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},
+        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
 
     };
 
@@ -123,13 +113,6 @@ void StopStateTest() {
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 0.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 0.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
-        
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
-        
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 80.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING},
         
     };
 
@@ -183,40 +166,40 @@ void IdleStateTest() {
 
     signals::FloatSignal oil_temp_input = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
     signals::BoolSignal is_engine_running_input = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
+    signals::BoolSignal clear_fault_request_input = signals::BoolSignal(false, signals::ValidityStatus::VALID);
 
     engine_overheat_protection::EngineOverheatProtection eop_test (
         create_default_config,
         oil_temp_input,
         is_engine_running_input,
+        clear_fault_request_input,
         manager
     );
 
     CycleInput scenario_input[] = {
         
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-        {70.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::VALID},   // STOP
+        {78.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
+        {78.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::VALID},   // STOP
         
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-        {70.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::INVALID},   // STOP
+        {78.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
+        {78.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::INVALID},   // STOP
 
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-        {70.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::INVALID}, // STOP
+        {78.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
+        {78.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::INVALID}, // STOP
 
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
+        {78.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
+        {78.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // STOP
+
+        {78.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
         {110.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},     // COUNTING
-
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-        {110.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},    // AFTER_RUN_COOLING
-
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-        {85.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-
-        {70.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
-        {85.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // STOP
 
     };
 
     CycleOutput scenario_output[] = {
+
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
+        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
+
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
         {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
 
@@ -224,19 +207,11 @@ void IdleStateTest() {
         {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-        {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
+        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 30.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
         {false, signals::ValidityStatus::VALID, 80.0f, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
 
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING},
-
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 30.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 30.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
     };
 
     std::size_t size_of_input = sizeof(scenario_input) / sizeof(scenario_input[0]);
@@ -291,11 +266,13 @@ void CountingStateTest() {
 
     signals::FloatSignal oil_temp_input = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
     signals::BoolSignal is_engine_running_input = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
+    signals::BoolSignal clear_fault_request_input = signals::BoolSignal(false, signals::ValidityStatus::VALID);
 
     engine_overheat_protection::EngineOverheatProtection eop_test (
         create_default_config,
         oil_temp_input,
         is_engine_running_input,
+        clear_fault_request_input,
         manager
     );
 
@@ -311,13 +288,10 @@ void CountingStateTest() {
         {90.0f, signals::ValidityStatus::INVALID, true, signals::ValidityStatus::INVALID},  // STOP
 
         {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-        {75.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
+        {80.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // IDLE
 
         {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-        {75.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // STOP
-
-        {90.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-        {98.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},      // AFTER_RUN_COOLING
+        {98.0f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},     // AFTER_RUN_COOLING
 
         {91.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
         {93.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
@@ -339,9 +313,6 @@ void CountingStateTest() {
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
-
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
 
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 40.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 60.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING},
@@ -401,6 +372,7 @@ void ProtectedStateTest() {
 
     signals::FloatSignal oil_temp_input = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
     signals::BoolSignal is_engine_running_value = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
+    signals::BoolSignal clear_fault_request_input = signals::BoolSignal(false, signals::ValidityStatus::VALID);
 
     auto create_default_config = CreateDefaultConfig();
 
@@ -408,10 +380,12 @@ void ProtectedStateTest() {
         create_default_config,
         oil_temp_input,
         is_engine_running_value,
+        clear_fault_request_input,
         manager
     );
 
     CycleInput scenario_input[] = {
+
         {91.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
         {93.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
         {95.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
@@ -443,14 +417,10 @@ void ProtectedStateTest() {
         {97.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // PROTECTED
         {80.01f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},    // AFTER_RUN_COOLING
 
-        {91.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-        {93.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-        {95.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // COUNTING
-        {97.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID},      // PROTECTED
-        {79.99f, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},    // STOP
     };
 
     CycleOutput scenario_output[] = {
+
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 42.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 47.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 52.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
@@ -482,11 +452,6 @@ void ProtectedStateTest() {
         {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 57.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::PROTECTED},
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.02f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING},
 
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 42.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 47.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 52.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::COUNTING},
-        {true, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 57.5f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::PROTECTED},
-        {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 0.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
     };
 
     std::size_t size_of_inputs = sizeof(scenario_input) / sizeof(scenario_input[0]);
@@ -504,6 +469,46 @@ void ProtectedStateTest() {
 
         assert(eop_test.StateRef() == scenario_output[i].state);
     }
+}
+
+void FaultStateTest() {
+    framework::Manager manager;
+
+    struct CycleInput {
+        float oil_temp_value;
+        signals::ValidityStatus oil_temp_validity;
+        bool is_engine_running_value;
+        signals::ValidityStatus is_engine_running_validity;
+    };
+
+    struct CycleOutput {
+        bool is_engine_overheat_protection_output;
+        signals::ValidityStatus is_engine_overheat_protection_validity;
+        float torque_limit_output;
+        signals::ValidityStatus torque_limit_validity;
+        float fan_request_output;
+        signals::ValidityStatus fan_request_validity;
+
+        engine_overheat_protection::EngineOverheatProtectionState state;
+    };
+
+    signals::FloatSignal oil_temp_input = signals::FloatSignal(0.0f, signals::ValidityStatus::INVALID);
+    signals::BoolSignal is_engine_running_value = signals::BoolSignal(false, signals::ValidityStatus::INVALID);
+    signals::BoolSignal clear_fault_request_input = signals::BoolSignal(false, signals::ValidityStatus::VALID);
+
+    auto create_default_config = CreateDefaultConfig();
+
+    engine_overheat_protection::EngineOverheatProtection eop_test (
+        create_default_config,
+        oil_temp_input,
+        is_engine_running_value,
+        clear_fault_request_input,
+        manager
+    );
+
+    CycleInput scenario_inputs[] = {
+        {}
+    };
 }
 
 void main() {

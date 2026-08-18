@@ -23,7 +23,19 @@ enum class EngineOverheatProtectionState {
     IDLE,
     COUNTING,
     PROTECTED,
-    AFTER_RUN_COOLING
+    AFTER_RUN_COOLING,
+    FAULT
+};
+
+enum class FaultReason {
+    NONE,
+    OIL_TEMP_SIGNAL_INVALID,
+    ENGINE_RUNNING_SIGNAL_INVALID,
+    UNEXPECTED_HIGH_TEMP_IN_STOP,
+    TEMP_RISE_TOO_FAST,
+    TEMP_OUT_OF_RANGE_LOW,
+    TEMP_OUT_OF_RANGE_HIGH,
+    LOOKUP_TABLE_ERROR
 };
 
 class EngineOverheatProtection: public framework::ModuleInterface {
@@ -42,6 +54,7 @@ public:
         const Config& config,
         const signals::FloatSignal& oil_temp,
         const signals::BoolSignal& is_engine_running,
+        const signals::BoolSignal& clear_fault_request,
         framework::Manager& manager
     );
 
@@ -60,7 +73,10 @@ private:
     const signals::FloatSignal& oil_temp_;
     const signals::BoolSignal& is_engine_running_;
 
+    const signals::BoolSignal& clear_fault_request_;
+
     engine_overheat_protection::EngineOverheatProtectionState state_;
+    engine_overheat_protection::FaultReason fault_reason_;
 
     signals::BoolSignal is_overheat_protection_output_;
     signals::FloatSignal torque_limit_output_;
