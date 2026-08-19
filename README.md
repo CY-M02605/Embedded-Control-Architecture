@@ -244,12 +244,7 @@ stateDiagram-v2
         (trigger: oil_temp <= low threshold)
     end note
     STOP --> IDLE: Engine is running
-    STOP --> FAULT: 
-            OIL_TEMP_SIGNAL_INVALID, 
-            ENGINE_RUNNING_SIGNAL_INVALID,
-            UNEXPECTED_HIGH_TEMP_IN_STOP,
-            TEMP_OUT_OF_RANGE_LOW,
-            TEMP_OUT_OF_RANGE_HIGH
+    STOP --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || UNEXPECTED_HIGH_TEMP_IN_STOP || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
 
     note right of IDLE
         engine is runnig
