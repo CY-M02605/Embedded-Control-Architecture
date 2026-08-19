@@ -244,7 +244,12 @@ stateDiagram-v2
         (trigger: oil_temp <= low threshold)
     end note
     STOP --> IDLE: Engine is running
-    STOP --> FAULT: oil_temp >= high threshold
+    STOP --> FAULT: 
+            OIL_TEMP_SIGNAL_INVALID, 
+            ENGINE_RUNNING_SIGNAL_INVALID,
+            UNEXPECTED_HIGH_TEMP_IN_STOP,
+            TEMP_OUT_OF_RANGE_LOW,
+            TEMP_OUT_OF_RANGE_HIGH
 
     note right of IDLE
         engine is runnig
@@ -252,7 +257,8 @@ stateDiagram-v2
         (trigger: oil_temp <= low threshold)
     end note
     IDLE --> COUNTING: oil temperature >= high threshold
-    IDLE --> STOP: engine is stopped && && oil **temperature <= low threshold**
+    IDLE --> STOP: engine is stopped && oil **temperature <= low threshold**
+    IDLE --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
 
     note right of COUNTING
         engine is runnig
@@ -263,6 +269,7 @@ stateDiagram-v2
     COUNTING --> PROTECTED: increment timer >= 3 && **oil temperature >= high threshold**
     COUNTING --> IDLE: oil temperature <= low threshold
     COUNTING --> AFTER_RUN_COOLING: engine is stopped && **oil temperature >= high threshold**
+    COUNTING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
 
     note right of PROTECTED
         engine is runnig
@@ -271,6 +278,7 @@ stateDiagram-v2
     end note
     PROTECTED --> IDLE: oil temperature <= low threshold
     PROTECTED --> AFTER_RUN_COOLING: Engine is stopped && **oil temperature >= high threshold**
+    PROTECTED --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
 
     note right of AFTER_RUN_COOLING
         engine is stopped
@@ -279,6 +287,7 @@ stateDiagram-v2
     end note
     AFTER_RUN_COOLING --> IDLE: oil temperature <= low threshold
     AFTER_RUN_COOLING --> COUNTING: Engine is running && **oil temperature >= high threshold**
+    AFTER_RUN_COOLING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
 
     note right of FAULT
         is_clearable_fault:
