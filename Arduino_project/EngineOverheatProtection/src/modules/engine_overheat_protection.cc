@@ -46,30 +46,52 @@ void EngineOverheatProtection::Update() {
 
     switch (state_)
     {
-    case EngineOverheatProtectionState::STOP:
-        if (!is_engine_running_.IsValid()) {
+    case EngineOverheatProtectionState::STOP: { 
+        const bool is_fault_condition = 
+            !is_engine_running_.IsValid() ||
+            !oil_temp_.IsValid() ||
+            oil_temp_.GetValue() >= 150.0f ||
+            oil_temp_.GetValue() >= config_.oil_high_threshold ||
+            oil_temp_.GetValue() <= -20.0f;
 
-            fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
-        
-        } else if (!oil_temp_.IsValid()) {
-        
-            fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
-        
+        if (is_fault_condition) {
+            if (!is_engine_running_.IsValid()) {
+
+                fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
+            
+            } else if (!oil_temp_.IsValid()) {
+            
+                fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
+            
+            } else if (oil_temp_.GetValue() >= 150.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
+
+            } else if (oil_temp_.GetValue() >= config_.oil_high_threshold) {
+
+                fault_reason_ = FaultReason::UNEXPECTED_HIGH_TEMP_IN_STOP;
+
+            } else if (oil_temp_.GetValue() <= -20.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
+
+            } 
+
+            is_overheat_protection_output = false;
+            is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+
+            torque_limit_output = 0.0f;
+            torque_limit_validity = signals::ValidityStatus::INVALID;
+
+            fan_request_output = 0.0f;
+            fan_request_validity = signals::ValidityStatus::INVALID;
+
+            state_ = EngineOverheatProtectionState::FAULT;
+            
+            increment_timer_.Clear();
+
+            break;    
         }
-
-        is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
-
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
-
-        fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
-
-        state_ = EngineOverheatProtectionState::FAULT;
-        increment_timer_.Clear();
-
-        break;
 
         if (is_engine_running_.GetValue()) {
 
@@ -103,31 +125,50 @@ void EngineOverheatProtection::Update() {
         increment_timer_.Clear();
 
         break;
+    }
     
     case EngineOverheatProtectionState::IDLE:
-        if (!is_engine_running_.IsValid()) {
+        const bool is_fault_condition = 
+            !is_engine_running_.IsValid() ||
+            !oil_temp_.IsValid() ||
+            oil_temp_.GetValue() >= 150.0f ||
+            oil_temp_.GetValue() >= config_.oil_high_threshold ||
+            oil_temp_.GetValue() <= -20.0f;
 
-            fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
-        
-        } else if (!oil_temp_.IsValid()) {
-        
-            fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
-        
+        if (is_fault_condition) {
+            if (!is_engine_running_.IsValid()) {
+
+                fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
+            
+            } else if (!oil_temp_.IsValid()) {
+            
+                fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
+            
+            } else if (oil_temp_.GetValue() >= 150.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
+
+            } else if (oil_temp_.GetValue() <= -20.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
+
+            } 
+
+            is_overheat_protection_output = false;
+            is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+
+            torque_limit_output = 0.0f;
+            torque_limit_validity = signals::ValidityStatus::INVALID;
+
+            fan_request_output = 0.0f;
+            fan_request_validity = signals::ValidityStatus::INVALID;
+
+            state_ = EngineOverheatProtectionState::FAULT;
+            
+            increment_timer_.Clear();
+
+            break;    
         }
-
-        is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
-
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
-
-        fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
-
-        state_ = EngineOverheatProtectionState::FAULT;
-        increment_timer_.Clear();
-
-        break;
 
         if (!is_engine_running_.GetValue()) {
 
@@ -181,29 +222,47 @@ void EngineOverheatProtection::Update() {
         break;
 
     case EngineOverheatProtectionState::COUNTING:
-        if (!is_engine_running_.IsValid()) {
+        const bool is_fault_condition = 
+            !is_engine_running_.IsValid() ||
+            !oil_temp_.IsValid() ||
+            oil_temp_.GetValue() >= 150.0f ||
+            oil_temp_.GetValue() >= config_.oil_high_threshold ||
+            oil_temp_.GetValue() <= -20.0f;
 
-            fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
-        
-        } else if (!oil_temp_.IsValid()) {
-        
-            fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
-        
+        if (is_fault_condition) {
+            if (!is_engine_running_.IsValid()) {
+
+                fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
+            
+            } else if (!oil_temp_.IsValid()) {
+            
+                fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
+            
+            } else if (oil_temp_.GetValue() >= 150.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
+
+            } else if (oil_temp_.GetValue() <= -20.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
+
+            } 
+
+            is_overheat_protection_output = false;
+            is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+
+            torque_limit_output = 0.0f;
+            torque_limit_validity = signals::ValidityStatus::INVALID;
+
+            fan_request_output = 0.0f;
+            fan_request_validity = signals::ValidityStatus::INVALID;
+
+            state_ = EngineOverheatProtectionState::FAULT;
+            
+            increment_timer_.Clear();
+
+            break;    
         }
-
-        is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
-
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
-
-        fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
-
-        state_ = EngineOverheatProtectionState::FAULT;
-        increment_timer_.Clear();
-
-        break;
 
         if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
 
@@ -276,29 +335,47 @@ void EngineOverheatProtection::Update() {
         break;        
 
     case EngineOverheatProtectionState::PROTECTED:
-        if (!is_engine_running_.IsValid()) {
+        const bool is_fault_condition = 
+            !is_engine_running_.IsValid() ||
+            !oil_temp_.IsValid() ||
+            oil_temp_.GetValue() >= 150.0f ||
+            oil_temp_.GetValue() >= config_.oil_high_threshold ||
+            oil_temp_.GetValue() <= -20.0f;
 
-            fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
-        
-        } else if (!oil_temp_.IsValid()) {
-        
-            fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
-        
+        if (is_fault_condition) {
+            if (!is_engine_running_.IsValid()) {
+
+                fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
+            
+            } else if (!oil_temp_.IsValid()) {
+            
+                fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
+            
+            } else if (oil_temp_.GetValue() >= 150.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
+
+            } else if (oil_temp_.GetValue() <= -20.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
+
+            } 
+
+            is_overheat_protection_output = false;
+            is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+
+            torque_limit_output = 0.0f;
+            torque_limit_validity = signals::ValidityStatus::INVALID;
+
+            fan_request_output = 0.0f;
+            fan_request_validity = signals::ValidityStatus::INVALID;
+
+            state_ = EngineOverheatProtectionState::FAULT;
+            
+            increment_timer_.Clear();
+
+            break;    
         }
-
-        is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
-
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
-
-        fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
-
-        state_ = EngineOverheatProtectionState::FAULT;
-        increment_timer_.Clear();
-
-        break;
 
         if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
 
@@ -352,29 +429,47 @@ void EngineOverheatProtection::Update() {
         break;
 
     case EngineOverheatProtectionState::AFTER_RUN_COOLING:
-        if (!is_engine_running_.IsValid()) {
+        const bool is_fault_condition = 
+            !is_engine_running_.IsValid() ||
+            !oil_temp_.IsValid() ||
+            oil_temp_.GetValue() >= 150.0f ||
+            oil_temp_.GetValue() >= config_.oil_high_threshold ||
+            oil_temp_.GetValue() <= -20.0f;
 
-            fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
-        
-        } else if (!oil_temp_.IsValid()) {
-        
-            fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
-        
+        if (is_fault_condition) {
+            if (!is_engine_running_.IsValid()) {
+
+                fault_reason_ = FaultReason::ENGINE_RUNNING_SIGNAL_INVALID;
+            
+            } else if (!oil_temp_.IsValid()) {
+            
+                fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
+            
+            } else if (oil_temp_.GetValue() >= 150.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
+
+            } else if (oil_temp_.GetValue() <= -20.0f) {
+
+                fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
+
+            } 
+
+            is_overheat_protection_output = false;
+            is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+
+            torque_limit_output = 0.0f;
+            torque_limit_validity = signals::ValidityStatus::INVALID;
+
+            fan_request_output = 0.0f;
+            fan_request_validity = signals::ValidityStatus::INVALID;
+
+            state_ = EngineOverheatProtectionState::FAULT;
+            
+            increment_timer_.Clear();
+
+            break;    
         }
-
-        is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
-
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
-
-        fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
-
-        state_ = EngineOverheatProtectionState::FAULT;
-        increment_timer_.Clear();
-
-        break;
         
         if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
 
@@ -427,11 +522,25 @@ void EngineOverheatProtection::Update() {
 
         break;
 
-    case EngineOverheatProtectionState::FAULT:
+    case EngineOverheatProtectionState::FAULT: { 
+        const bool can_clear_fault_conditions = 
+            clear_fault_request_.IsValid() && 
+            clear_fault_request_.GetValue() &&
+            oil_temp_.IsValid() && 
+            oil_temp_.GetValue() <= config_.oil_low_threshold &&
+            is_engine_running_.IsValid() &&
+            !is_engine_running_.GetValue();
 
-        if (clear_fault_request_.GetValue() == true && clear_fault_request_.IsValid() && 
-            oil_temp_.GetValue() <= config_.oil_low_threshold && oil_temp_.IsValid() && 
-            !is_engine_running_.GetValue() && is_engine_running_.IsValid()) {
+        const bool is_clearable_fault = 
+            fault_reason_ == FaultReason::ENGINE_RUNNING_SIGNAL_INVALID ||
+            fault_reason_ == FaultReason::OIL_TEMP_SIGNAL_INVALID ||
+            fault_reason_ == FaultReason::TEMP_OUT_OF_RANGE_HIGH ||
+            fault_reason_ == FaultReason::TEMP_OUT_OF_RANGE_LOW ||
+            // fault_reason_ == FaultReason::TEMP_RISE_TOO_FAST ||
+            fault_reason_ == FaultReason::UNEXPECTED_HIGH_TEMP_IN_STOP;
+
+        if (can_clear_fault_conditions && is_clearable_fault) {
+
             is_overheat_protection_output = false;
             is_overheat_protection_validity = signals::ValidityStatus::VALID;
 
@@ -444,33 +553,38 @@ void EngineOverheatProtection::Update() {
             state_ = EngineOverheatProtectionState::STOP;
             fault_reason_ = FaultReason::NONE;
             increment_timer_.Clear();
+
+        } else {
+
+            is_overheat_protection_output = false;
+            is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+
+            torque_limit_output = 0.0f;
+            torque_limit_validity = signals::ValidityStatus::INVALID;
+
+            fan_request_output = 0.0f;
+            fan_request_validity = signals::ValidityStatus::INVALID;
+
+            state_ = EngineOverheatProtectionState::FAULT;
+            increment_timer_.Clear();
+
         }
-
-        is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
-
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
-
-        fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
-
-        state_ = EngineOverheatProtectionState::FAULT;
-        increment_timer_.Clear();
-
         break;
+    }
+
     default:
 
         is_overheat_protection_output = false;
-        is_overheat_protection_validity = signals::ValidityStatus::INVALID;
+        is_overheat_protection_validity = signals::ValidityStatus::VALID;
 
-        torque_limit_output = 0.0f;
-        torque_limit_validity = signals::ValidityStatus::INVALID;
+        torque_limit_output = 100.0f;
+        torque_limit_validity = signals::ValidityStatus::VALID;
 
         fan_request_output = 0.0f;
-        fan_request_validity = signals::ValidityStatus::INVALID;
+        fan_request_validity = signals::ValidityStatus::VALID;
 
         state_ = EngineOverheatProtectionState::STOP;
+        fault_reason_ = FaultReason::NONE;
         increment_timer_.Clear();
 
         break;
@@ -495,4 +609,8 @@ const signals::FloatSignal& EngineOverheatProtection::FanRequestRef() const {
 
 const engine_overheat_protection::EngineOverheatProtectionState EngineOverheatProtection::StateRef() const {
     return state_;
+}
+
+const engine_overheat_protection::FaultReason EngineOverheatProtection::FaultReasonRef() const {
+    return fault_reason_;
 }
