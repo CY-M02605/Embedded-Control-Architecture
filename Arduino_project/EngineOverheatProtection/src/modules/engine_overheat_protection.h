@@ -32,10 +32,10 @@ enum class FaultReason {
     OIL_TEMP_SIGNAL_INVALID,
     ENGINE_RUNNING_SIGNAL_INVALID,
     UNEXPECTED_HIGH_TEMP_IN_STOP,
-    TEMP_RISE_TOO_FAST,
+    // TEMP_RISE_TOO_FAST,
     TEMP_OUT_OF_RANGE_LOW,
     TEMP_OUT_OF_RANGE_HIGH,
-    LOOKUP_TABLE_ERROR
+    // LOOKUP_TABLE_ERROR
 };
 
 class EngineOverheatProtection: public framework::ModuleInterface {
@@ -67,6 +67,8 @@ public:
     const signals::FloatSignal& FanRequestRef() const;
 
     const engine_overheat_protection::EngineOverheatProtectionState StateRef() const;
+
+    const engine_overheat_protection::FaultReason FaultReasonRef() const;
 
 private:
     const Config config_;
