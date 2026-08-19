@@ -229,8 +229,10 @@ It activates overheat protection when the oil temperature remains above the conf
 
 ##### State Machine
 
-`STOP` is not used as a generic initial high-temperature handling state. It represents a normal stopped condition. 
-Therefore, high oil temperature detected in `STOP` is considered abnormal in this demo.
+`STOP` is used as a generic initial state. It represents a normal stopped condition. 
+`FAULT` is used as a fault state, such as temperature overhigh or overlow, input signal invalid, etc.
+Therefore, high oil temperature detected in `STOP` is considered abnormal in this demo (`UNEXPECTED_HIGH_TEMP_IN_STOP`).
+Input signal `clear_fault_request` is considered as a momentary push button for fault clearing button to clearable faults.
 
 ```mermaid
 stateDiagram-v2
@@ -279,10 +281,15 @@ stateDiagram-v2
     AFTER_RUN_COOLING --> COUNTING: Engine is running && **oil temperature >= high threshold**
 
     note right of FAULT
-        in STOP state
-        oil temperature is higher than high threshold
+        is_clearable_fault:
+            NONE,
+            OIL_TEMP_SIGNAL_INVALID,
+            ENGINE_RUNNING_SIGNAL_INVALID,
+            UNEXPECTED_HIGH_TEMP_IN_STOP,
+            TEMP_OUT_OF_RANGE_LOW,
+            TEMP_OUT_OF_RANGE_HIGH
     end note
-    FAULT --> FAULT: latched until system reset
+    FAULT --> STOP: can_clear_fault_conditions && is_clearable_fault
 ```
 
 ### Utility
