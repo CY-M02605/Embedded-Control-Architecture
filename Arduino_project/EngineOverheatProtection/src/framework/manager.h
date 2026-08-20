@@ -28,7 +28,7 @@ class Manager {
         }
 
         void UpdateAll() {
-            for (size_t i = 0;i < count_; ++i) {
+            for (std::size_t i = 0;i < count_; ++i) {
                 modules_[i]->Update();
             }
         }
@@ -36,7 +36,7 @@ class Manager {
     private:
         // std::vector<module_interafce::ModuleInterface*> modules_;
 
-        static const int MAX_SIZE = 10;
+        static const std::size_t MAX_SIZE = 10;
         framework::ModuleInterface* modules_[MAX_SIZE];
         int count_;
 };
