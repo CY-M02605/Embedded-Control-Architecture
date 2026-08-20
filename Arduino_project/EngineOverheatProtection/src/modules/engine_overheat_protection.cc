@@ -127,7 +127,7 @@ void EngineOverheatProtection::Update() {
         break;
     }
     
-    case EngineOverheatProtectionState::IDLE:
+    case EngineOverheatProtectionState::IDLE: { 
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
@@ -220,8 +220,9 @@ void EngineOverheatProtection::Update() {
         increment_timer_.Clear();
 
         break;
+    }
 
-    case EngineOverheatProtectionState::COUNTING:
+    case EngineOverheatProtectionState::COUNTING: { 
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
@@ -333,8 +334,9 @@ void EngineOverheatProtection::Update() {
         fault_reason_ = FaultReason::NONE;
 
         break;        
+    }
 
-    case EngineOverheatProtectionState::PROTECTED:
+    case EngineOverheatProtectionState::PROTECTED: {
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
@@ -427,8 +429,9 @@ void EngineOverheatProtection::Update() {
         increment_timer_.Clear();
 
         break;
+    }
 
-    case EngineOverheatProtectionState::AFTER_RUN_COOLING:
+    case EngineOverheatProtectionState::AFTER_RUN_COOLING: { 
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
@@ -521,6 +524,7 @@ void EngineOverheatProtection::Update() {
         increment_timer_.Clear();
 
         break;
+    }
 
     case EngineOverheatProtectionState::FAULT: { 
         const bool can_clear_fault_conditions = 
