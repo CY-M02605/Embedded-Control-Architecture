@@ -133,7 +133,10 @@ Embedded-Control-Architecture/
 |   |       |   ├── manager.h
 |   |       |   └── module_interface.h
 |   |       ├── modules/
-|   |       |
+|   |       |   ├── fan_cooling_control.h
+|   |       |   ├── fan_cooling_control.cpp
+|   |       |   ├── oil_temp_warning.h
+|   |       |   └── oil_temp_warning.cpp
 |   |       ├── signals/
 |   |       |   └── signal.h
 |   |       └── utility/
@@ -148,6 +151,8 @@ Embedded-Control-Architecture/
 |           ├── framework/
 |           |   └── module_interface.h
 |           ├── modules/
+|           |   ├── engine_overheat_protection.h
+|           |   └── engine_overheat_protection.cc
 |           ├── signals/
 |           |   └── signal.h
 |           └── utility/
@@ -155,7 +160,11 @@ Embedded-Control-Architecture/
 |               └── increment_timer.h
 ├── .gitignore
 ├── CMakeLists.txt
-└── README.md
+├── README.md
+└── .vscode
+    |── c_cpp_properties.json (`.vscode/c_cpp_properties.json` configures VS Code IntelliSense for this project, including include paths, compiler path, and C++ standard settings. It helps the editor resolve headers and provide code completion, but it is not the actual build configuration.)
+    └── launch.json (`.vscode/launch.json` defines VS Code debug configurations. In this project, it is used to launch and debug the PC-based assert test executable, allowing breakpoints, step execution, and variable inspection for the engine overheat protection module.)
+
 ```
 
 ------------------------------------------------------------------------
@@ -233,6 +242,8 @@ It activates overheat protection when the oil temperature remains above the conf
 `FAULT` is used as a fault state, such as temperature overhigh or overlow, input signal invalid, etc.
 Therefore, high oil temperature detected in `STOP` is considered abnormal in this demo (`UNEXPECTED_HIGH_TEMP_IN_STOP`).
 Input signal `clear_fault_request` is considered as a momentary push button for fault clearing button to clearable faults.
+If `clear_fault_request` is invalid, the module doesn't clear the fault and keeps the currect `FAULT` state, the original `FaultReason` is preserved.
+Fault priorities are ordered as `OIL_TEMP_SIGNAL_INVALID` > `ENGINE_RUNNING_SIGNAL_INVALID` > `UNEXPECTED_HIGH_TEMP_IN_STOP` > `TEMP_OUT_OF_RANGE_HIGH` > `TEMP_OUT_OF_RANGE_LOW`, once input signal becomes invalid, its value must not be used to determine state transitions. 
 
 ```mermaid
 stateDiagram-v2
@@ -273,7 +284,7 @@ stateDiagram-v2
     end note
     PROTECTED --> IDLE: oil temperature <= low threshold
     PROTECTED --> AFTER_RUN_COOLING: Engine is stopped && **oil temperature >= high threshold**
-    PROTECTED --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
+    PROTECTED --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
 
     note right of AFTER_RUN_COOLING
         engine is stopped
@@ -282,7 +293,7 @@ stateDiagram-v2
     end note
     AFTER_RUN_COOLING --> IDLE: oil temperature <= low threshold
     AFTER_RUN_COOLING --> COUNTING: Engine is running && **oil temperature >= high threshold**
-    AFTER_RUN_COOLING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
+    AFTER_RUN_COOLING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
 
     note right of FAULT
         is_clearable_fault:
@@ -290,8 +301,9 @@ stateDiagram-v2
             OIL_TEMP_SIGNAL_INVALID,
             ENGINE_RUNNING_SIGNAL_INVALID,
             UNEXPECTED_HIGH_TEMP_IN_STOP,
-            TEMP_OUT_OF_RANGE_LOW,
-            TEMP_OUT_OF_RANGE_HIGH
+            TEMP_OUT_OF_RANGE_HIGH,
+            TEMP_OUT_OF_RANGE_LOW
+            
     end note
     FAULT --> STOP: can_clear_fault_conditions && is_clearable_fault
 ```
