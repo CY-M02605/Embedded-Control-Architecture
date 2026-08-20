@@ -237,6 +237,7 @@ void IdleStateTest() {
         signals::ValidityStatus fan_request_validity;
 
         engine_overheat_protection::EngineOverheatProtectionState state_;
+        engine_overheat_protection::FaultReason fault_reason_;
     };
 
     auto create_default_config = CreateDefaultConfig();
@@ -255,6 +256,7 @@ void IdleStateTest() {
 
     CycleInput scenario_input[] = {
         
+        // {oil_temp_value, oil_temp_validity, is_engine_running_value, is_engine_running_validity, clear_fault_request_value, clear_fault_request_validity}
         {78.0f, signals::ValidityStatus::VALID, true, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},      // IDLE
         {78.0f, signals::ValidityStatus::INVALID, false, signals::ValidityStatus::VALID, false, signals::ValidityStatus::VALID},   // FAULT
         
@@ -274,6 +276,7 @@ void IdleStateTest() {
 
     CycleOutput scenario_output[] = {
 
+        // {is_overheat_protection_output, validity, torque_limit_output, validity, fan_request_output, validity, state, fault_reason}
         {false, signals::ValidityStatus::VALID, 100.0f, signals::ValidityStatus::VALID, 20.0f, signals::ValidityStatus::VALID, engine_overheat_protection::EngineOverheatProtectionState::IDLE},
         {false, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, 0.0f, signals::ValidityStatus::INVALID, engine_overheat_protection::EngineOverheatProtectionState::STOP},
 
@@ -588,7 +591,7 @@ void FaultStateTest() {
     };
 }
 
-void main() {
+int main() {
     std::cout << "============ Engine Overheat Protection Tests ============" << std::endl;
     std::cout << std::endl;
     const auto stop_state_start_time = std::chrono::steady_clock::now();
@@ -650,4 +653,6 @@ void main() {
     //           << " us"
     //           << std::endl;
     // std::cout << std::endl;
+
+    return 0;
 }
