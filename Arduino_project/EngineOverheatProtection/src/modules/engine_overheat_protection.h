@@ -41,8 +41,11 @@ enum class FaultReason {
 class EngineOverheatProtection: public framework::ModuleInterface {
 public:
     struct Config {
-        float oil_high_threshold;
-        float oil_low_threshold;
+        float oil_temp_high_threshold;
+        float oil_temp_low_threshold;
+        float oil_temp_physical_max;
+        float oil_temp_physical_min;
+        float oil_temp_low_fault_recover_critical_value;
         utility::IncrementTimer::Config increment_timer_config;
         const utility::LookupTable1D<float>::Points* torque_lookup_table_points;
         std::size_t torque_lookup_table_size;
