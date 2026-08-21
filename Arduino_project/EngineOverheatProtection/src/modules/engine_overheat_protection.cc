@@ -6,6 +6,8 @@
 
 #include "engine_overheat_protection.h"
 
+#include <iostream>
+
 using engine_overheat_protection::EngineOverheatProtection;
 
 using engine_overheat_protection::EngineOverheatProtectionState;
@@ -50,9 +52,9 @@ void EngineOverheatProtection::Update() {
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
-            oil_temp_.GetValue() >= 150.0f ||
-            oil_temp_.GetValue() >= config_.oil_high_threshold ||
-            oil_temp_.GetValue() <= -20.0f;
+            oil_temp_.GetValue() >= config_.oil_temp_physical_max ||
+            oil_temp_.GetValue() >= config_.oil_temp_high_threshold ||
+            oil_temp_.GetValue() <= config_.oil_temp_physical_min;
 
         if (is_fault_condition) {
             if (!is_engine_running_.IsValid()) {
@@ -63,15 +65,15 @@ void EngineOverheatProtection::Update() {
             
                 fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
             
-            } else if (oil_temp_.GetValue() >= 150.0f) {
+            } else if (oil_temp_.GetValue() >= config_.oil_temp_physical_max) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
 
-            } else if (oil_temp_.GetValue() >= config_.oil_high_threshold) {
+            } else if (oil_temp_.GetValue() >= config_.oil_temp_high_threshold) {
 
                 fault_reason_ = FaultReason::UNEXPECTED_HIGH_TEMP_IN_STOP;
 
-            } else if (oil_temp_.GetValue() <= -20.0f) {
+            } else if (oil_temp_.GetValue() <= config_.oil_temp_physical_min) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
 
@@ -131,9 +133,8 @@ void EngineOverheatProtection::Update() {
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
-            oil_temp_.GetValue() >= 150.0f ||
-            oil_temp_.GetValue() >= config_.oil_high_threshold ||
-            oil_temp_.GetValue() <= -20.0f;
+            oil_temp_.GetValue() >= config_.oil_temp_physical_max ||
+            oil_temp_.GetValue() <= config_.oil_temp_physical_min;
 
         if (is_fault_condition) {
             if (!is_engine_running_.IsValid()) {
@@ -144,11 +145,11 @@ void EngineOverheatProtection::Update() {
             
                 fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
             
-            } else if (oil_temp_.GetValue() >= 150.0f) {
+            } else if (oil_temp_.GetValue() >= config_.oil_temp_physical_max) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
 
-            } else if (oil_temp_.GetValue() <= -20.0f) {
+            } else if (oil_temp_.GetValue() <= config_.oil_temp_physical_min) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
 
@@ -188,7 +189,7 @@ void EngineOverheatProtection::Update() {
             break;
         }
 
-        if (oil_temp_.GetValue() >= config_.oil_high_threshold) {
+        if (oil_temp_.GetValue() >= config_.oil_temp_high_threshold) {
 
             is_overheat_protection_output = false;
             is_overheat_protection_validity = signals::ValidityStatus::VALID;
@@ -226,9 +227,8 @@ void EngineOverheatProtection::Update() {
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
-            oil_temp_.GetValue() >= 150.0f ||
-            oil_temp_.GetValue() >= config_.oil_high_threshold ||
-            oil_temp_.GetValue() <= -20.0f;
+            oil_temp_.GetValue() >= config_.oil_temp_physical_max ||
+            oil_temp_.GetValue() <= config_.oil_temp_physical_min;
 
         if (is_fault_condition) {
             if (!is_engine_running_.IsValid()) {
@@ -239,11 +239,11 @@ void EngineOverheatProtection::Update() {
             
                 fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
             
-            } else if (oil_temp_.GetValue() >= 150.0f) {
+            } else if (oil_temp_.GetValue() >= config_.oil_temp_physical_max) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
 
-            } else if (oil_temp_.GetValue() <= -20.0f) {
+            } else if (oil_temp_.GetValue() <= config_.oil_temp_physical_min) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
 
@@ -265,7 +265,7 @@ void EngineOverheatProtection::Update() {
             break;    
         }
 
-        if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
+        if (oil_temp_.GetValue() <= config_.oil_temp_low_threshold) {
 
             is_overheat_protection_output = false;
             is_overheat_protection_validity = signals::ValidityStatus::VALID;
@@ -340,9 +340,8 @@ void EngineOverheatProtection::Update() {
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
-            oil_temp_.GetValue() >= 150.0f ||
-            oil_temp_.GetValue() >= config_.oil_high_threshold ||
-            oil_temp_.GetValue() <= -20.0f;
+            oil_temp_.GetValue() >= config_.oil_temp_physical_max ||
+            oil_temp_.GetValue() <= config_.oil_temp_physical_min;
 
         if (is_fault_condition) {
             if (!is_engine_running_.IsValid()) {
@@ -353,11 +352,11 @@ void EngineOverheatProtection::Update() {
             
                 fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
             
-            } else if (oil_temp_.GetValue() >= 150.0f) {
+            } else if (oil_temp_.GetValue() >= config_.oil_temp_physical_max) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
 
-            } else if (oil_temp_.GetValue() <= -20.0f) {
+            } else if (oil_temp_.GetValue() <= config_.oil_temp_physical_min) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
 
@@ -379,7 +378,7 @@ void EngineOverheatProtection::Update() {
             break;    
         }
 
-        if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
+        if (oil_temp_.GetValue() <= config_.oil_temp_low_threshold) {
 
             is_overheat_protection_output = false;
             is_overheat_protection_validity = signals::ValidityStatus::VALID;
@@ -435,9 +434,8 @@ void EngineOverheatProtection::Update() {
         const bool is_fault_condition = 
             !is_engine_running_.IsValid() ||
             !oil_temp_.IsValid() ||
-            oil_temp_.GetValue() >= 150.0f ||
-            oil_temp_.GetValue() >= config_.oil_high_threshold ||
-            oil_temp_.GetValue() <= -20.0f;
+            oil_temp_.GetValue() >= config_.oil_temp_physical_max ||
+            oil_temp_.GetValue() <= config_.oil_temp_physical_min;
 
         if (is_fault_condition) {
             if (!is_engine_running_.IsValid()) {
@@ -448,11 +446,11 @@ void EngineOverheatProtection::Update() {
             
                 fault_reason_ = FaultReason::OIL_TEMP_SIGNAL_INVALID;
             
-            } else if (oil_temp_.GetValue() >= 150.0f) {
+            } else if (oil_temp_.GetValue() >= config_.oil_temp_physical_max) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_HIGH;
 
-            } else if (oil_temp_.GetValue() <= -20.0f) {
+            } else if (oil_temp_.GetValue() <= config_.oil_temp_physical_min) {
 
                 fault_reason_ = FaultReason::TEMP_OUT_OF_RANGE_LOW;
 
@@ -474,7 +472,7 @@ void EngineOverheatProtection::Update() {
             break;    
         }
         
-        if (oil_temp_.GetValue() <= config_.oil_low_threshold) {
+        if (oil_temp_.GetValue() <= config_.oil_temp_low_threshold) {
 
             is_overheat_protection_output = false;
             is_overheat_protection_validity = signals::ValidityStatus::VALID;
@@ -492,7 +490,7 @@ void EngineOverheatProtection::Update() {
             break;
         }
 
-        if (is_engine_running_.GetValue() && oil_temp_.GetValue() >= config_.oil_high_threshold) {
+        if (is_engine_running_.GetValue() && oil_temp_.GetValue() >= config_.oil_temp_high_threshold) {
 
             is_overheat_protection_output = false;
             is_overheat_protection_validity = signals::ValidityStatus::VALID;
@@ -531,9 +529,14 @@ void EngineOverheatProtection::Update() {
             clear_fault_request_.IsValid() && 
             clear_fault_request_.GetValue() &&
             oil_temp_.IsValid() && 
-            oil_temp_.GetValue() <= config_.oil_low_threshold &&
+            oil_temp_.GetValue() <= config_.oil_temp_low_threshold &&
+            oil_temp_.GetValue() >= config_.oil_temp_low_fault_recover_critical_value && 
             is_engine_running_.IsValid() &&
             !is_engine_running_.GetValue();
+
+        // std::cout << "can_clear_fault_conditions = " << can_clear_fault_conditions << std::endl;
+        // bool x = clear_fault_request_.GetValue();
+        // std::cout << "x = " << x << std::endl;
 
         const bool is_clearable_fault = 
             fault_reason_ == FaultReason::ENGINE_RUNNING_SIGNAL_INVALID ||
@@ -542,6 +545,8 @@ void EngineOverheatProtection::Update() {
             fault_reason_ == FaultReason::TEMP_OUT_OF_RANGE_LOW ||
             // fault_reason_ == FaultReason::TEMP_RISE_TOO_FAST ||
             fault_reason_ == FaultReason::UNEXPECTED_HIGH_TEMP_IN_STOP;
+        
+        // std::cout << "is_clearable_fault = " << is_clearable_fault << std::endl;
 
         if (can_clear_fault_conditions && is_clearable_fault) {
 
