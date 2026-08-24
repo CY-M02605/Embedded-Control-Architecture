@@ -291,7 +291,7 @@ stateDiagram-v2
         oil temperature > low threshold
         (*trigger: oil_temp >= high threshold)
     end note
-    AFTER_RUN_COOLING --> IDLE: oil temperature <= low threshold
+    AFTER_RUN_COOLING --> STOP: oil temperature <= low threshold
     AFTER_RUN_COOLING --> COUNTING: Engine is running && **oil temperature >= high threshold**
     AFTER_RUN_COOLING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
 
