@@ -7,7 +7,8 @@
 #ifndef LOOKUP_TABLE_1D_H
 #define LOOKUP_TABLE_1D_H
 
-#include <cstddef>
+// #include <cstddef>
+#include <stddef.h>
 
 namespace utility {
 
@@ -19,7 +20,7 @@ class LookupTable1D {
             T output;
         };
 
-    LookupTable1D(const Points* points, std::size_t size)
+    LookupTable1D(const Points* points, size_t size)
      : points_(points), size_(size) {}
 
     T LookupTable(T input) const {
@@ -28,7 +29,7 @@ class LookupTable1D {
         } else if (input >= points_[size_ - 1].input) {
             return points_[size_ - 1].output;
         } else {
-            std::size_t count;
+            size_t count;
             for (count = 0; count < size_ - 1; ++count) {
                 if (input >= points_[count].input && input <= points_[count + 1].input) {
                     T lower_input = points_[count].input;
@@ -48,7 +49,7 @@ class LookupTable1D {
 
     private:
         const Points* points_;
-        std::size_t size_;
+        size_t size_;
 };
 }
 

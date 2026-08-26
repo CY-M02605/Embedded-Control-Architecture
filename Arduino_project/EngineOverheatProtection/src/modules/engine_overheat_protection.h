@@ -13,7 +13,8 @@
 #include "../utility/increment_timer.h"
 #include "../utility/lookup_table_1d.h"
 
-#include <cstddef>
+// #include <cstddef>
+#include <stddef.h>
 
 namespace engine_overheat_protection {
 
@@ -47,9 +48,9 @@ public:
         float oil_temp_low_fault_recover_critical_value;
         utility::IncrementTimer::Config increment_timer_config;
         const utility::LookupTable1D<float>::Points* torque_lookup_table_points;
-        std::size_t torque_lookup_table_size;
+        size_t torque_lookup_table_size;
         const utility::LookupTable1D<float>::Points* fan_request_lookup_table_points;
-        std::size_t fan_request_lookup_table_size;
+        size_t fan_request_lookup_table_size;
     };
 
     explicit EngineOverheatProtection(

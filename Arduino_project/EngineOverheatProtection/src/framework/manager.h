@@ -9,7 +9,8 @@
 
 #include "module_interface.h"
 
-#include <vector>
+// #include <vector>
+#include <stddef.h>
 
 namespace framework {
 class Manager {
@@ -28,7 +29,7 @@ class Manager {
         }
 
         void UpdateAll() {
-            for (std::size_t i = 0;i < count_; ++i) {
+            for (size_t i = 0;i < count_; ++i) {
                 modules_[i]->Update();
             }
         }
@@ -36,7 +37,7 @@ class Manager {
     private:
         // std::vector<module_interafce::ModuleInterface*> modules_;
 
-        static const std::size_t MAX_SIZE = 10;
+        static const size_t MAX_SIZE = 10;
         framework::ModuleInterface* modules_[MAX_SIZE];
         int count_;
 };

@@ -13,9 +13,9 @@
 
 
 // Step1: create minimal Arduino system
-constexpr uint_8 OIL_TEMP_INPUT_PIN = A0;
-constexpr unit_8 ENGINE_RUNNING_INPUT_PIN = 2;
-constexpr unit_8 CLEAR_FAULT_REQUEST_INPUT_PIN = 3;
+constexpr uint8_t OIL_TEMP_INPUT_PIN = A0;
+constexpr uint8_t ENGINE_RUNNING_INPUT_PIN = 2;
+constexpr uint8_t CLEAR_FAULT_REQUEST_INPUT_PIN = 3;
 
 framework::Manager manager;
 
@@ -75,7 +75,7 @@ void setup() {
 
     pinMode(OIL_TEMP_INPUT_PIN, INPUT);
     pinMode(ENGINE_RUNNING_INPUT_PIN, INPUT_PULLUP);
-    pinMode(clear_fault_request_input, INPUT_PULLUP);
+    pinMode(CLEAR_FAULT_REQUEST_INPUT_PIN, INPUT_PULLUP);
 
     Serial.println("Engine overheat protection module demo starts.");
 }
@@ -90,9 +90,9 @@ void loop() {
 
     bool clear_fault_request_value = digitalRead(CLEAR_FAULT_REQUEST_INPUT_PIN) == LOW;
 
-    oil_temp_input(oil_temp_value, signals::ValidityStatus::VALID);
-    is_engine_running_input(is_engine_running_value, signals::ValidityStatus::VALID);
-    clear_fault_request_input(clear_fault_request_value, signals::ValidityStatus::VALID);
+    oil_temp_input.Set(oil_temp_value, signals::ValidityStatus::VALID);
+    is_engine_running_input.Set(is_engine_running_value, signals::ValidityStatus::VALID);
+    clear_fault_request_input.Set(clear_fault_request_value, signals::ValidityStatus::VALID);
 
     manager.UpdateAll();
 
@@ -106,21 +106,21 @@ void loop() {
     Serial.println(clear_fault_request_value);
 
     Serial.println("| state: ");
-    Serial.println(engine_overheat_protection_module.StateRef());
+    Serial.println(static_cast<int>(engine_overheat_protection_module.StateRef()));
 
     Serial.println("| fault reason: ");
-    Serial.println(engine_overheat_protection_module.FaultReasonRef());
+    Serial.println(static_cast<int>(engine_overheat_protection_module.FaultReasonRef()));
 
     Serial.println("| engine overheat protection status: ");
-    Serial.println(engine_overheat_protection_module.IsOverheatProtectedRef());
+    Serial.println(engine_overheat_protection_module.IsOverheatProtectedRef().GetValue());
 
     Serial.println("| torque limit percent: ");
-    Serial.println(engine_overheat_protection_module.TorqueLimitRef());
+    Serial.println(engine_overheat_protection_module.TorqueLimitRef().GetValue());
 
     Serial.println("| fan request percent: ");
-    Serial.println(engine_overheat_protection_module.FanRequestRef());
+    Serial.println(engine_overheat_protection_module.FanRequestRef().GetValue());
 
-    delay(100);
+    delay(1000);
 }
 
 float AnalogValueToOilTempMap(int raw_value) {

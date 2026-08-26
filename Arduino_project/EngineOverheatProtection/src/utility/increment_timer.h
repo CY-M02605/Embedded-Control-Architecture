@@ -7,13 +7,14 @@
 #ifndef INCREMENT_TIMER_H
 #define INCREMENT_TIMER_H
 
-#include <cstddef>
+// #include <cstddef>
+#include <stddef.h>
 
 namespace utility {
 class IncrementTimer {
     public:
         struct Config {
-            std::size_t threshold_time;
+            size_t threshold_time;
         };
 
         explicit IncrementTimer(const Config& config):
@@ -39,7 +40,7 @@ class IncrementTimer {
 
     private:
         const Config config_;
-        std::size_t count_;
+        size_t count_;
 
 };
 }

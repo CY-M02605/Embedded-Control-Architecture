@@ -6,7 +6,7 @@
 
 #include "engine_overheat_protection.h"
 
-#include <iostream>
+// #include <iostream>
 
 using engine_overheat_protection::EngineOverheatProtection;
 
