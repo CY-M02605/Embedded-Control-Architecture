@@ -12,7 +12,7 @@
 #include "src/modules/engine_overheat_protection.h"
 
 
-// Step1: create minimum Arduino system
+// Step1: create minimal Arduino system
 constexpr uint_8 OIL_TEMP_INPUT_PIN = A0;
 constexpr unit_8 ENGINE_RUNNING_INPUT_PIN = 2;
 constexpr unit_8 CLEAR_FAULT_REQUEST_INPUT_PIN = 3;
