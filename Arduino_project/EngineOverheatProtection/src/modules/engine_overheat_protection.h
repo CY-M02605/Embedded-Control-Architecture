@@ -10,7 +10,6 @@
 #include "../framework/manager.h"
 #include "../framework/module_interface.h"
 #include "../signals/signal.h"
-// #include "../utility/hysteresis.h"
 #include "../utility/increment_timer.h"
 #include "../utility/lookup_table_1d.h"
 
