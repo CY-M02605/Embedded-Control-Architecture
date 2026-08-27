@@ -1,0 +1,702 @@
+# Embedded Control Architecture
+
+A vehicle-oriented C++ practice project for learning modular embedded control software architecture.
+
+This project explores how embedded control software can be organized into reusable modules, shared signals, utility components, a manager-based update mechanism, and separate PC and Arduino targets.
+
+The project currently includes:
+
+-   PC-based module simulations and manual tests
+-   A modular Arduino UNO oil-temperature warning demo
+-   Signal validity handling
+-   Manager-based module registration and execution
+-   Hysteresis-based warning control
+-   Non-blocking periodic execution using `millis()`
+
+------------------------------------------------------------------------
+
+## Project Goals
+
+The main goals of this project are:
+
+-   Practice modular C++ design for embedded systems
+-   Understand the relationships between modules, signals, framework, utility, and application layers
+-   Build control modules with clear input and output signal interfaces
+-   Practice header/source separation
+-   Practice CMake-based PC builds and print/assert tests
+-   Port reusable control logic to Arduino UNO
+-   Learn how to connect software architecture with real hardware input and output
+
+------------------------------------------------------------------------
+
+## Project Structure
+
+``` text
+Embedded-Control-Architecture/
+├── assembly/
+|   ├── instantiation.h
+|   └── instantiation_practice.h
+|
+├── docs/
+|   ├── circuit-notes.md
+|   └── troubleshooting.md
+|
+├── examples/
+|   ├── oil_temp-fan and torque state.md
+|   └── 
+|
+├── framework/
+|   ├── manager.h
+|   └── module_interface.h
+|
+├── modules/
+|   ├── gear_display_facade/
+|   |   ├── include/
+|   |   |   ├── gear_display_facade.h
+|   |   |   └── gear_types.h
+|   |   └── src/
+|   |       └── gear_display_facade.cc
+|   ├── hydraulic_oil_warning/
+|   |   ├── include/
+|   |   |   └── hydraulic_oil_warning.h
+|   |   └── src/
+|   |       └── hydraulic_oil_warning.cc
+|   ├── instantiation_practice/
+|   |   └── include/
+|   |       ├── instantiation_practice.h
+|   |       └── speed_monitor.h
+|   ├── cooling_fan_control/
+|   |   ├── include/
+|   |   |   ├── cooling_fan_control.h
+|   |   |   └── coolingFanControl.h
+|   |   └── src/
+|   |       ├── cooling_fan_control.cc
+|   |       └── coolingFanControl.cc
+|   ├── vehicle_speed_speed/
+|   |   ├── include/
+|   |   |   ├── vehicle_speed_speed.h
+|   |   |   └── vehicleSpeedControl.h
+|   |   └── src/
+|   |       ├── vehicle_speed_control.cc
+|   |       └── vehicleSpeedControl.cc
+|   ├── engine_overheat_protection/
+|   |   ├── include/
+|   |   |   └── engine_overheat_protection.h
+|   |   └── src/
+|   |       └── engine_overheat_protection.cc
+|
+├── signals/
+|   └── signal.h
+|
+├── utility/
+|   ├── hysteresis.h
+|   └── increment_timer.h
+|
+├── tests/
+|   ├── module/
+|   |   ├── gear_display_facade/
+|   |   |   ├── CMakeLists.txt
+|   |   |   └── print_based_tests.cpp
+|   |   ├── hydraulic_oil_warning/
+|   |   |   ├── CMakeLists.txt
+|   |   |   └── print_based_tests.cpp
+|   |   ├── instantiation_practice/
+|   |   |   ├── CMakeLists.txt
+|   |   |   └── print_based_tests.cpp
+|   |   ├── cooling_fan_control/
+|   |   |   ├── CMakeLists.txt
+|   |   |   └── print_based_tests.cpp
+|   |   └── vehicle_speed/
+|   |   |   ├── CMakeLists.txt
+|   |   |   └── print_based_tests.cpp
+|   |   └── engine_overheat_protection/
+|   |       ├── CMakeLists.txt
+|   |       ├── assert_based_tests.cpp
+|   |       └── print_based_tests.cpp
+|   └── unit/
+|       ├── CMakeLists.txt
+|       ├── test_hysteresis.cpp
+|       ├── test_increment_timer.cpp
+|       └── test_lookup_table_1d.cpp
+|
+├── Arduino_project/
+|   ├── OilTempWarningDemo/
+|   |   ├── OilTempWarningDemo.ino
+|   |   ├── Version Managerment/
+|   |   |   ├── 1/
+|   |   |   |   └── OilTempWarningDemo.ino
+|   |   |   └── 2/
+|   |   |       └── OilTempWarningDemo.ino
+|   |   |
+|   |   └── src/
+|   |       ├── framework/
+|   |       |   ├── manager.h
+|   |       |   └── module_interface.h
+|   |       ├── modules/
+|   |       |   ├── fan_cooling_control.h
+|   |       |   ├── fan_cooling_control.cpp
+|   |       |   ├── oil_temp_warning.h
+|   |       |   └── oil_temp_warning.cpp
+|   |       ├── signals/
+|   |       |   └── signal.h
+|   |       └── utility/
+|   |           ├── hysteresis.h
+|   |           └── increment_timer.h
+|   |
+|   └── EngineOverheatProtection/
+|       ├── EngineOverheatProtection.ino
+|       ├── Version Managerment/
+|       |
+|       └── src/
+|           ├── framework/
+|           |   └── module_interface.h
+|           ├── modules/
+|           |   ├── engine_overheat_protection.h
+|           |   └── engine_overheat_protection.cc
+|           ├── signals/
+|           |   └── signal.h
+|           └── utility/
+|               ├── lookup_table_1d.h
+|               └── increment_timer.h
+├── .gitignore
+├── CMakeLists.txt
+├── README.md
+└── .vscode
+    |── c_cpp_properties.json (`.vscode/c_cpp_properties.json` configures VS Code IntelliSense for this project, including include paths, compiler path, and C++ standard settings. It helps the editor resolve headers and provide code completion, but it is not the actual build configuration.)
+    └── launch.json (`.vscode/launch.json` defines VS Code debug configurations. In this project, it is used to launch and debug the PC-based assert test executable, allowing breakpoints, step execution, and variable inspection for the engine overheat protection module.)
+
+```
+
+------------------------------------------------------------------------
+
+## Architecture Overview
+
+The project is organized into several logical layers.
+
+### Framework
+
+The `framework` layer provides the basic execution structure.
+
+-   `ModuleInterface`
+        As a father class (interface) for each module logic, it defines a common interface for control modules.
+        It includes destructor ~ModuleInterface() function, initializer Init() function and the entrance method of each module Update() function.
+        The PC version is same with Arduino version.
+-   `Manager`
+        It stores all registered modules throuth RegisterModule() function, and update in batches throuth UpdateAll() function. The content, in PC version, is a vector; in Arduino version, is a fixed-length array. In UpdateAll() function, the Update() function of every registered module is called.
+        This allows different modules to be executed through the same interface.
+
+------------------------------------------------------------------------
+
+### Signals
+
+The `signals` layer provides typed signal objects for passing data between the application layer, such as PC test code or Arduino sketches, and control modules.
+
+A signal contains:
+
+-   a value
+-   a validity status
+
+The validity status allows a module to distinguish between a usable input data (valid) and an unavailable input data (invalid).
+
+The input source can later be changed without modifying the control module. For example, the oil-temperature signal could come from:
+
+-   an Arduino analog input
+-   a real temperature sensor
+-   CAN communication
+-   PC simulation data
+
+------------------------------------------------------------------------
+
+### Modules
+
+The `modules` layer contains application-specific control logic.
+
+Examples include:
+
+-   engine_overheat_protection
+-   gear_display_facade
+-   hydraulic_oil_warning
+-   instantiation_practice
+-   cooling_fan_control
+-   vehicle_speed_control
+
+A typical module:
+
+1.  reads one or more input signals
+2.  processes control logic in `Update()`
+3.  writes one or more output signals
+
+The Arduino `OilTempWarning` module reads a temperature signal and produces a warning signal, and dirves a fan output.
+
+I plan to realize the function on Arduino for engine overheat protection next step.
+
+#### Engine Overheat Protection
+
+The `EngineOverheatProtection` module monitors the engine-running state and hydraulic oil temperature.
+
+It activates overheat protection when the oil temperature remains above the configured high threshold for the configured duration.
+
+##### State Machine
+
+`STOP` is used as a generic initial state. It represents a normal stopped condition. 
+`FAULT` is used as a fault state, such as temperature overhigh or overlow, input signal invalid, etc.
+Therefore, high oil temperature detected in `STOP` is considered abnormal in this demo (`UNEXPECTED_HIGH_TEMP_IN_STOP`).
+Input signal `clear_fault_request` is considered as a momentary push button for fault clearing button to clearable faults.
+If `clear_fault_request` is invalid, the module doesn't clear the fault and keeps the currect `FAULT` state, the original `FaultReason` is preserved.
+Fault priorities are ordered as `OIL_TEMP_SIGNAL_INVALID` > `ENGINE_RUNNING_SIGNAL_INVALID` > `UNEXPECTED_HIGH_TEMP_IN_STOP` > `TEMP_OUT_OF_RANGE_HIGH` > `TEMP_OUT_OF_RANGE_LOW`, once input signal becomes invalid, its value must not be used to determine state transitions. 
+
+```mermaid
+stateDiagram-v2
+    [*] --> STOP
+
+    note right of STOP
+        engine is stopped
+        oil_temp < high threshold
+        (trigger: oil_temp <= low threshold)
+    end note
+    STOP --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || UNEXPECTED_HIGH_TEMP_IN_STOP || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
+    STOP --> IDLE: Engine is running
+
+    note right of IDLE
+        engine is runnig
+        oil_temp < high threshold
+        (trigger: oil_temp <= low threshold)
+    end note
+    IDLE --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
+    IDLE --> COUNTING: oil temperature >= high threshold
+    IDLE --> STOP: engine is stopped (&& oil **temperature <= low threshold**)
+
+    note right of COUNTING
+        engine is runnig
+        oil temperature > low threshold
+        (trigger: oil temperature >= high threshold)
+        increment timer < 3
+    end note
+    COUNTING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
+    COUNTING --> PROTECTED: increment timer >= 3 (&& **oil temperature >= high threshold**)
+    COUNTING --> IDLE: oil temperature <= low threshold
+    COUNTING --> AFTER_RUN_COOLING: engine is stopped (&& **oil temperature >= high threshold**)
+
+    note right of PROTECTED
+        engine is runnig
+        oil temperature > low threshold
+        (trigger: oil_temp >= high threshold)
+    end note
+    PROTECTED --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
+    PROTECTED --> IDLE: oil temperature <= low threshold
+    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped (&& **oil temperature >= high threshold**)
+
+    note right of AFTER_RUN_COOLING
+        engine is stopped
+        oil temperature > low threshold
+        (*trigger: oil_temp >= high threshold)
+    end note
+    AFTER_RUN_COOLING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
+    AFTER_RUN_COOLING --> STOP: oil temperature <= low threshold
+    AFTER_RUN_COOLING --> COUNTING: Engine is running (&& **oil temperature >= high threshold**)
+
+    note right of FAULT
+        is_clearable_fault:
+            NONE,
+            OIL_TEMP_SIGNAL_INVALID,
+            ENGINE_RUNNING_SIGNAL_INVALID,
+            UNEXPECTED_HIGH_TEMP_IN_STOP,
+            TEMP_OUT_OF_RANGE_HIGH,
+            TEMP_OUT_OF_RANGE_LOW
+            
+    end note
+    FAULT --> STOP: can_clear_fault_conditions && is_clearable_fault
+```
+
+### Utility
+
+The `utility` layer contains reusable helper algorithms and timing components.
+
+Current utilities include:
+
+#### `Hysteresis`
+
+Provides stable switching behavior using separate high and low thresholds.
+
+Behavior:
+``` text
+Temperature >= high_threshold  -> warning ON
+Temperature <= low_threshold  -> warning OFF
+low_threshold < temperature < high_threshold -> keep previous state
+```
+
+This prevents the warning output from rapidly switching on and off when the input fluctuates near one threshold.
+
+#### `IncrementTimer`
+
+Provides non-blocking periodic timing using Arduino `millis()`.
+
+It allows the application to execute control logic periodically without using `delay()`.
+
+* Utilities are included only by the files that actually use them.
+
+------------------------------------------------------------------------
+
+### Assembly
+
+The `assembly` layer creates modules and connects signals in the PC version of the project.
+
+It acts as a system-wiring layer where concrete objects are instantiated and their dependencies are connected.
+
+------------------------------------------------------------------------
+
+### Tests
+
+The `tests` folder contains PC-based manual programs separated into unit and module tests.
+Inside of them, there are two test patterns: print based test and assert based test.
+
+These tests are used to:
+
+-   verify module logic
+-   check signal behavior
+-   test boundary conditions
+-   validate modules before using them on embedded hardware
+
+------------------------------------------------------------------------
+
+### Arduino Application Layer
+
+`OilTempWarningDemo.ino` is the Arduino application entry and integration layer.
+
+It is responsible for:
+
+-   creating the `Manager`
+-   creating shared signals
+-   creating and configuring modules
+-   reading Arduino hardware inputs
+-   running modules periodically
+-   converting module outputs into hardware outputs
+-   printing debug information through the serial port
+
+The `.ino` file acts as the composition root of the Arduino application.
+
+It knows the concrete classes because its responsibility is to assemble the complete system.
+
+------------------------------------------------------------------------
+
+## Arduino PROJECT Oil-Temperature Warning Demo
+
+The Arduino demo has been successfully compiled, uploaded, and tested on an Arduino UNO-compatible board.
+
+### Hardware
+
+-   Arduino UNO
+-   10 kΩ potentiometer
+-   IN 4007 NPN
+-   PN 2222
+-   motor
+-   1k resistence
+-   built-in LED
+-   jumper wires
+-   breadboard
+
+### Wiring
+
+``` text
+Potentiometer outer pin  -> Arduino 5V
+Potentiometer middle pin -> Arduino A0
+Potentiometer outer pin  -> Arduino GND
+```
+
+The two outer pins may be exchanged. This only reverses the direction in
+which the ADC value increases.
+
+The built-in Arduino LED is used as the warning output:
+
+``` cpp
+constexpr int WARNING_LED_PIN = LED_BUILTIN;
+```
+
+------------------------------------------------------------------------
+
+## Arduino Data Flow
+
+``` text
+Potentiometer
+    |
+Arduino A0
+    |
+analogRead()
+    |
+ADC value: 0-1023
+    |
+Simulated oil temperature: 0-120 °C
+    |
+FloatSignal
+    |
+OilTempWarning::Update()
+    |
+Hysteresis
+    |
+BoolSignal
+    |
+Built-in LED
+```
+
+The ADC-to-temperature conversion is:
+
+``` cpp
+const float oil_temp_c =
+    static_cast<float>(raw_adc)
+    * MAX_SIMULATED_TEMP_C
+    / 1023.0f;
+```
+
+The current simulation maps:
+
+``` text
+ADC 0    -> 0 °C
+ADC 512  -> approximately 60 °C
+ADC 1023 -> 120 °C
+```
+
+------------------------------------------------------------------------
+
+## Hysteresis Behavior
+
+The warning module uses separate activation and deactivation thresholds.
+
+Example configuration:
+
+``` cpp
+constexpr float WARNING_LOW_THRESHOLD_C = 90.0f;
+constexpr float WARNING_HIGH_THRESHOLD_C = 95.0f;
+```
+
+Behavior:
+
+``` text
+Initial state: OFF
+
+Temperature rises:
+89 °C -> OFF
+93 °C -> OFF
+95 °C -> ON
+100 °C -> ON
+
+Temperature falls:
+94 °C -> remains ON
+92 °C -> remains ON
+90 °C -> OFF
+```
+
+This behavior prevents LED flickering near the warning threshold.
+
+------------------------------------------------------------------------
+
+## Periodic Execution
+
+The Arduino application uses `IncrementTimer` instead of `delay()`.
+
+Example:
+
+``` cpp
+if (!control_timer.IsExpired()) {
+    return;
+}
+```
+
+This means that the fast-running Arduino `loop()` skips the control task until the configured period has elapsed.
+
+The control flow is:
+
+``` text
+Check timer
+    |
+Read analog input
+    |
+Update input signal
+    |
+Call Manager::UpdateAll()
+    |
+Read warning output
+    |
+Update LED
+    |
+Print debug information
+```
+
+------------------------------------------------------------------------
+
+## Example Serial Output
+
+``` text
+OilTempWarningDemo started.
+ADC: 765 | Oil temp: 89.74 C | Warning: OFF
+ADC: 800 | Oil temp: 93.84 C | Warning: OFF
+ADC: 833 | Oil temp: 97.71 C | Warning: ON
+ADC: 884 | Oil temp: 103.70 C | Warning: ON
+```
+
+------------------------------------------------------------------------
+
+## Build and Run PC Tests
+
+Go to a test directory, create a build directory, configure CMake, and
+build:
+
+``` bash
+cd Disc_name:\Embedded-Control-Architecture
+cmake -S .\tests\module\"responding module floder" -B .\build\tests\module\"responding module folder"
+cmake --build .\build\tests\module\"responding module folder" --config Debug (or Release)
+cd .\build\tests\module\"responding module folder"\Debug (or Release)
+cd .\"responding generated module .exe file"
+```
+
+Then run the generated executable.
+
+On Windows, the executable may be generated inside a configuration directory such as:
+
+``` text
+Debug mode: 
+    cmake --build .\build\tests\module\"test + module name.cpp" or "main.cpp" --config Debug
+    cmake --build .\build\tests\unit\"test + module name.cpp" or "main.cpp" --config Debug
+Release mode: 
+    cmake --build .\build\tests\module\"test + module name.cpp" or "main.cpp" --config Release
+    cmake --build .\build\tests\unit\"test + module name.cpp" or "main.cpp" --config Release
+```
+The main difference between "Debug" and "Release" is that "Debug" builds are intended for development and testing. They keep more debug information and use less optimization, and allow "assert()" to detect the details of failure tests. "Release" builds are intended for more optimized execution. They may disable "assert()" checks depends on compiler setting, so they are not used as the main mode for assertion-based tests.
+
+Test command for add_test() items in CMakeList.txt:
+    ctest --test-dir .\build\tests\unit -C Debug --output-on-failure
+    explaination:
+        - `ctest`: runs tests registered by CMake through `add_test()`.
+        - `--test-dir`: specifies the build directory where the test configuration is located.
+        - `-C Debug`: selects the `Debug` configuration for multi-configuration generators such as Visual Studio.
+        - `--output-on-failure`: prints test output only when a test fails.
+
+------------------------------------------------------------------------
+
+## Arduino Usage
+
+Open:
+
+``` text
+arduino_uno/OilTempWarningDemo/OilTempWarningDemo.ino
+```
+
+Then:
+
+1.  Connect the Arduino UNO by USB.
+2.  Select `Arduino UNO` in Arduino IDE.
+3.  Select the correct serial port.
+4.  Compile the sketch.
+5.  Upload it to the board.
+6.  Open the Serial Monitor.
+7.  Select the baud rate configured in `Serial.begin()`.
+8.  Rotate the potentiometer and observe the temperature, warning state, and built-in LED.
+
+------------------------------------------------------------------------
+
+## Design Notes
+
+### Why `OilTempWarning` does not read A0 directly
+
+The module reads a `FloatSignal` instead of directly calling:
+
+``` cpp
+analogRead(A0);
+```
+
+This separates hardware input from control logic.
+
+The same module can later receive temperature data from a different source without changing its warning algorithm.
+
+### Why `Hysteresis` is inside `OilTempWarning`
+
+Hysteresis is part of the warning behavior:
+
+``` text
+turn ON at the high threshold
+turn OFF at the low threshold
+```
+
+Therefore, it is reasonable for `OilTempWarning` to use `Hysteresis` internally.
+
+### Why `IncrementTimer` is used by the `.ino` file
+
+The current timer controls the execution period of the complete Arduino
+application.
+
+It is therefore part of application scheduling rather than the oil-temperature warning algorithm itself.
+
+------------------------------------------------------------------------
+
+## Current Status
+
+Completed:
+
+-   Basic module interface
+-   Manager-based module registration
+-   Shared typed signals
+-   Signal validity handling
+-   PC manual test targets
+-   Arduino UNO application structure
+-   Analog-input temperature simulation
+-   Warning LED output
+-   Non-blocking periodic execution
+-   Hysteresis-based warning behavior
+-   Successful hardware test on Arduino UNO
+-   Relization of two modules in circuit (fan cooling control and oil temp waring)
+-   Successful motor output
+-   Add automated unit tests
+-   Improve CMake organization
+
+------------------------------------------------------------------------
+
+## Future Improvements
+
+Possible future improvements include:
+
+-   Add input filtering for noisy analog signals
+-   Add a buzzer warning output
+-   Add an LCD temperature display
+-   Add multiple modules with different update periods
+-   Add CAN-style signal simulation
+-   Add state-machine-based control logic
+-   Separate platform-independent utilities from Arduino-specific utilities
+-   Add architecture and signal-flow diagrams
+-   Add real temperature-sensor support
+-   Add fault handling for invalid or disconnected inputs
+
+------------------------------------------------------------------------
+
+## Notes
+
+This is a learning-oriented embedded-control architecture project.
+
+It is not intended to be a production-ready ECU framework.
+
+The purpose is to practice:
+
+-   C++ class design
+-   object lifetime and references
+-   header/source separation
+-   module-based architecture
+-   signal-based communication
+-   manager-based execution
+-   utility reuse
+-   CMake build structure
+-   Arduino hardware integration
+-   embedded debugging
+
+------------------------------------------------------------------------
+
+## Troubleshooting
+
+See [Troubleshooting Notes](docs/TROUBLESHOOTING.md). -\> Symptoms,
+causes, diagnosis, and solutions
+
+## Circuitnotes
+
+See [Troubleshooting Notes](docs/CIRCUIT_NOTES.md). -\> Circuit design,
+theory, formulas, measurements, and improvements
+
+## License
+
+This project is currently intended for personal learning and practice.
