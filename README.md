@@ -646,10 +646,8 @@ Common issues encountered during Arduino integration:
 
 For more details:
 
-```md
-See [Troubleshooting Notes](docs/TROUBLESHOOTING.md).
-See [Circuit Notes](docs/CIRCUIT_NOTES.md).
-```
+- [Troubleshooting Notes](docs/TROUBLESHOOTING.md).
+- [Circuit Notes](docs/CIRCUIT_NOTES.md).
 
 ---
 
