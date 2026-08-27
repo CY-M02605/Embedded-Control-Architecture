@@ -624,6 +624,7 @@ Embedded-Control-Architecture/
 └── .vscode
     |── c_cpp_properties.json (`.vscode/c_cpp_properties.json` configures VS Code IntelliSense for this project, including include paths, compiler path, and C++ standard settings. It helps the editor resolve headers and provide code completion, but it is not the actual build configuration.)
     └── launch.json (`.vscode/launch.json` defines VS Code debug configurations. In this project, it is used to launch and debug the PC-based assert test executable, allowing breakpoints, step execution, and variable inspection for the engine overheat protection module.)
+```
 
 ---
 
@@ -646,7 +647,8 @@ Common issues encountered during Arduino integration:
 For more details:
 
 ```md
-See [Troubleshooting Notes](docs/TROUBLESHOOTING.md).
+See [Troubleshooting Notes](docs/TROUBLESHOOTING.md). -\> Symptoms,
+causes, diagnosis, and solutions
 See [Circuit Notes](docs/CIRCUIT_NOTES.md).
 ```
 
