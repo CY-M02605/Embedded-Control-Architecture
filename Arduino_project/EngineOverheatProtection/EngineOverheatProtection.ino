@@ -96,28 +96,28 @@ void loop() {
 
     manager.UpdateAll();
 
-    Serial.println("oil temp: ");
-    Serial.println(oil_temp_value);
+    Serial.print("oil temp: ");
+    Serial.print(oil_temp_value);
 
-    Serial.println("| is engine running: ");
-    Serial.println(is_engine_running_value);
+    Serial.print("| is engine running: ");
+    Serial.print(is_engine_running_value);
 
-    Serial.println("| clear fault request: ");
-    Serial.println(clear_fault_request_value);
+    Serial.print("| clear fault request: ");
+    Serial.print(clear_fault_request_value);
 
-    Serial.println("| state: ");
-    Serial.println(static_cast<int>(engine_overheat_protection_module.StateRef()));
+    Serial.print("| state: ");
+    Serial.print(StateToStr(engine_overheat_protection_module.StateRef()));
 
-    Serial.println("| fault reason: ");
-    Serial.println(static_cast<int>(engine_overheat_protection_module.FaultReasonRef()));
+    Serial.print("| fault reason: ");
+    Serial.print(FaultReasonToStr(engine_overheat_protection_module.FaultReasonRef()));
 
-    Serial.println("| engine overheat protection status: ");
-    Serial.println(engine_overheat_protection_module.IsOverheatProtectedRef().GetValue());
+    Serial.print("| engine overheat protection status: ");
+    Serial.print(engine_overheat_protection_module.IsOverheatProtectedRef().GetValue());
 
-    Serial.println("| torque limit percent: ");
-    Serial.println(engine_overheat_protection_module.TorqueLimitRef().GetValue());
+    Serial.print("| torque limit percent: ");
+    Serial.print(engine_overheat_protection_module.TorqueLimitRef().GetValue());
 
-    Serial.println("| fan request percent: ");
+    Serial.print("| fan request percent: ");
     Serial.println(engine_overheat_protection_module.FanRequestRef().GetValue());
 
     delay(1000);
@@ -125,4 +125,54 @@ void loop() {
 
 float AnalogValueToOilTempMap(int raw_value) {
     return -30.0f + static_cast<float>(raw_value) * 160.0f / 1023.0f;
+}
+
+const char* StateToStr(engine_overheat_protection::EngineOverheatProtectionState raw_state) {
+    switch (raw_state)
+    {
+    case engine_overheat_protection::EngineOverheatProtectionState::STOP:
+        return "STOP";
+
+    case engine_overheat_protection::EngineOverheatProtectionState::IDLE:
+        return "IDLE";
+
+    case engine_overheat_protection::EngineOverheatProtectionState::COUNTING:
+        return "COUNTING";
+
+    case engine_overheat_protection::EngineOverheatProtectionState::PROTECTED:
+        return "PROTECTED";
+
+    case engine_overheat_protection::EngineOverheatProtectionState::AFTER_RUN_COOLING:
+        return "AFTER_RUN_COOLING";
+
+    case engine_overheat_protection::EngineOverheatProtectionState::FAULT:
+        return "FAULT";
+    }
+
+    return "error";
+}
+
+const char* FaultReasonToStr(engine_overheat_protection::FaultReason raw_fault_reason) {
+    switch (raw_fault_reason)
+    {
+    case engine_overheat_protection::FaultReason::NONE:
+        return "NONE";
+
+    case engine_overheat_protection::FaultReason::OIL_TEMP_SIGNAL_INVALID:
+        return "OIL_TEMP_SIGNAL_INVALID";
+
+    case engine_overheat_protection::FaultReason::ENGINE_RUNNING_SIGNAL_INVALID:
+        return "ENGINE_RUNNING_SIGNAL_INVALID";
+
+    case engine_overheat_protection::FaultReason::UNEXPECTED_HIGH_TEMP_IN_STOP:
+        return "UNEXPECTED_HIGH_TEMP_IN_STOP";
+
+    case engine_overheat_protection::FaultReason::TEMP_OUT_OF_RANGE_HIGH:
+        return "TEMP_OUT_OF_RANGE_HIGH";
+
+    case engine_overheat_protection::FaultReason::TEMP_OUT_OF_RANGE_LOW:
+        return "TEMP_OUT_OF_RANGE_LOW"
+    }
+
+    return "error";
 }
