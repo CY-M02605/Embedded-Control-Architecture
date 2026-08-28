@@ -12,11 +12,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Configure CMake
-        run: cmake -S ./tests/module/engine_overheat_protection_Arduino -B ./build/eop -G "MinGW Makefiles"
+      - name: Configure EngineOverheatProtectionArduino tests
+        run: cmake -S ./tests/module/engine_overheat_protection_Arduino -B ./execution/eop -G "MinGW Makefiles"
 
-      - name: Build
-        run: cmake --build ./build/eop
+      - name: Build EngineOverheatProtectionArduino tests
+        run: cmake --build ./execution/eop
 
-      - name: Run test
-        run: ./build/eop/engine_overheat_protection_Arduino_assert_based_test.exe
+      - name: Run EngineOverheatProtectionArduino tests
+        run: ./execution/eop/engine_overheat_protection_Arduino_assert_based_test.exe
+
+      - name: Configure utilities tests
+      - run: cmake -S ./tests/unit -B ./execution/utilities -G "MinGW Makefiles"
+
+      - name: Build utilities tests
+      - run: cmake --build ./execution/utilities
+
+      - name: Run utilities tests
+      - run: ctest --test-dir ./execution/utilities --output-on-failure
