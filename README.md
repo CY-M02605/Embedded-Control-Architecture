@@ -98,23 +98,13 @@ Recommended README format:
 
 ---
 
-## Circuit Diagram
+## Hardware Schematic
 
-A circuit diagram can be added here after it is created.
+The hardware schematic for the Engine Overheat Protection Demo was created using KiCad.
 
-Recommended path:
+![Engine Overheat Protection Schematic](docs/images/engine_overheat_protection_schematic.svg)
 
-```text
-docs/images/engine_overheat_protection_wiring.png
-```
-
-Recommended README format:
-
-```md
-![Engine Overheat Protection Wiring](docs/images/engine_overheat_protection_wiring.png)
-```
-
-### Current Hardware Inputs
+### Hardware Inputs
 
 ```text
 Potentiometer outer pin  -> Arduino 5V
@@ -122,11 +112,11 @@ Potentiometer middle pin -> Arduino A0
 Potentiometer outer pin  -> Arduino GND
 
 Engine running button:
-Arduino D2 -> push button -> GND
+Arduino D2 -> latching switch -> GND
 Use INPUT_PULLUP in software.
 
 Clear fault request button:
-Arduino D3 -> push button -> GND
+Arduino D3 -> momentary push button -> GND
 Use INPUT_PULLUP in software.
 ```
 
@@ -135,6 +125,22 @@ With `INPUT_PULLUP`, the digital input logic is inverted:
 ```text
 Button released -> HIGH -> false
 Button pressed  -> LOW  -> true
+```
+
+### Hardware Outputs
+
+```text
+Engine overheat protection output:
+Arduino D4 -> buzzer -> GND
+Use OUTPUT in software.
+
+Fan request output:
+Arduino D5 -> 220 ohm resistor -> LED -> GND
+Use OUTPUT (PWM) in software.
+
+Torque limit output:
+Arduino D6 -> 220 ohm resistor -> LED -> GND
+Use OUTPUT (PWM) in software.
 ```
 
 ---
