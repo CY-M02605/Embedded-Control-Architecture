@@ -1,5 +1,7 @@
 # Embedded Control Architecture
 
+![MinGW C++ Tests](https://github.com/CY-M02605/Embedded-Control-Architecture/actions/workflows/mingw-tests.yml/badge.svg)
+
 A vehicle-oriented C++ practice project for learning modular embedded control software architecture.
 
 This project demonstrates how embedded control software can be organized into reusable control modules, typed signal interfaces, utility components, and a manager-based execution mechanism. The same control logic is first tested on a PC and then integrated into Arduino UNO hardware demos.
@@ -686,7 +688,6 @@ Possible future improvements include:
 
 - Add input filtering for noisy analog signals
 - Add LED or PWM outputs for fan request and torque limit demonstration
-- Add a circuit diagram
 - Add a short demo video
 - Add a buzzer warning output
 - Add an LCD temperature display
@@ -715,7 +716,9 @@ The purpose is to practice:
 - utility reuse
 - CMake build structure
 - Arduino hardware integration
+- KiCad circuit diagram drawing 
 - embedded debugging
+- accumulating embedded experience
 
 ---
 
