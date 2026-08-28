@@ -1,6 +1,6 @@
 # Embedded Control Architecture
 
-![MinGW C++ Tests](https://github.com/CY-M02605/Embedded-Control-Architecture/actions/workflows/mingw-tests.yml/badge.svg)
+[![MinGW C++ Tests](https://github.com/CY-M02605/Embedded-Control-Architecture/actions/workflows/mingw-tests.yml/badge.svg)](https://github.com/CY-M02605/Embedded-Control-Architecture/actions/workflows/mingw-tests.yml)
 
 A vehicle-oriented C++ practice project for learning modular embedded control software architecture.
 
