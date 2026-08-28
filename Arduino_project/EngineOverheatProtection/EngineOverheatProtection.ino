@@ -16,12 +16,15 @@
 constexpr uint8_t OIL_TEMP_INPUT_PIN = A0;
 constexpr uint8_t ENGINE_RUNNING_INPUT_PIN = 2;
 constexpr uint8_t CLEAR_FAULT_REQUEST_INPUT_PIN = 3;
+constexpr uint8_t ENGINE_OVERHEAT_PROTECTION_OUTPUT_PIN = 4;
+constexpr uint8_t FAN_REQUEST_OUTPUT_PIN = 5;
+constexpr uint8_t TORQUE_LIMIT_OUTPUT_PIN = 6;
 
 framework::Manager manager;
 
-signals::FloatSignal oil_temp_input(0.0f, signals::ValidityStatus::VALID);
-signals::BoolSignal is_engine_running_input(false, signals::ValidityStatus::VALID);
-signals::BoolSignal clear_fault_request_input(false, signals::ValidityStatus::VALID);
+signals::FloatSignal oil_temp_input(0.0f, signals::ValidityStatus::INVALID);
+signals::BoolSignal is_engine_running_input(false, signals::ValidityStatus::INVALID);
+signals::BoolSignal clear_fault_request_input(false, signals::ValidityStatus::INVALID);
 
 using Table = utility::LookupTable1D<float>;
 
@@ -76,6 +79,9 @@ void setup() {
     pinMode(OIL_TEMP_INPUT_PIN, INPUT);
     pinMode(ENGINE_RUNNING_INPUT_PIN, INPUT_PULLUP);
     pinMode(CLEAR_FAULT_REQUEST_INPUT_PIN, INPUT_PULLUP);
+    pinMode(ENGINE_OVERHEAT_PROTECTION_OUTPUT_PIN, OUTPUT);
+    pinMode(FAN_REQUEST_OUTPUT_PIN, OUTPUT);
+    pinMode(TORQUE_LIMIT_OUTPUT_PIN, OUTPUT);
 
     Serial.println("Engine overheat protection module demo starts.");
 }
@@ -95,6 +101,15 @@ void loop() {
     clear_fault_request_input.Set(clear_fault_request_value, signals::ValidityStatus::VALID);
 
     manager.UpdateAll();
+
+    const bool is_engine_overheat_protected = engine_overheat_protection_module.IsOverheatProtectedRef().GetValue();
+    digitalWrite(ENGINE_OVERHEAT_PROTECTION_OUTPUT_PIN, is_engine_overheat_protected? HIGH : LOW);
+
+    const uint8_t fan_request_PWM_value = PercentToPWM(engine_overheat_protection_module.FanRequestRef().GetValue());
+    analogWrite(FAN_REQUEST_OUTPUT_PIN, fan_request_PWM_value);
+
+    const uint8_t torque_limit_PWM_value = PercentToPWM(engine_overheat_protection_module.TorqueLimitRef().GetValue());
+    analogWrite(TORQUE_LIMIT_OUTPUT_PIN, torque_limit_PWM_value);
 
     Serial.print("oil temp: ");
     Serial.print(oil_temp_value);
@@ -125,6 +140,18 @@ void loop() {
 
 float AnalogValueToOilTempMap(int raw_value) {
     return -30.0f + static_cast<float>(raw_value) * 160.0f / 1023.0f;
+}
+
+uint8_t PercentToPWM(uint8_t percentage) {
+    if (percentage < 0.0f) {
+        percentage = 0.0f;
+    }
+    
+    if (percentage > 100.0f) {
+        percentage = 100.0f;
+    }
+
+    return static_cast<uint8_t>(percentage * 255.0f / 100.0f);
 }
 
 const char* StateToStr(engine_overheat_protection::EngineOverheatProtectionState raw_state) {
@@ -171,7 +198,7 @@ const char* FaultReasonToStr(engine_overheat_protection::FaultReason raw_fault_r
         return "TEMP_OUT_OF_RANGE_HIGH";
 
     case engine_overheat_protection::FaultReason::TEMP_OUT_OF_RANGE_LOW:
-        return "TEMP_OUT_OF_RANGE_LOW"
+        return "TEMP_OUT_OF_RANGE_LOW";
     }
 
     return "error";
