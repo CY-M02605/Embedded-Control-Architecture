@@ -1,6 +1,7 @@
 # Embedded Control Architecture
 
 [![MinGW C++ Tests](https://github.com/CY-M02605/Embedded-Control-Architecture/actions/workflows/mingw-tests.yml/badge.svg)](https://github.com/CY-M02605/Embedded-Control-Architecture/actions/workflows/mingw-tests.yml)
+The GitHub Actions workflow automatically builds and runs the MinGW-based assert tests for the Engine Overheat Protection module on each push and pull request.
 
 A vehicle-oriented C++ practice project for learning modular embedded control software architecture.
 
