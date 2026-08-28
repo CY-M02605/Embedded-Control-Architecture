@@ -510,8 +510,13 @@ Embedded-Control-Architecture/
 |   └── instantiation_practice.h
 |
 ├── docs/
-|   ├── circuit-notes.md
-|   └── troubleshooting.md
+|   ├── images/
+|   |   └── engine_overheat_protection_schematic.svg
+|   ├── CIRCUIT_NOTES.md
+|   ├── GIT_OPERATION_MANUAL.md
+|   ├── LINUX_NOTES.md
+|   ├── TROUBLESHOOTING.md
+|   └── README_first_version.md
 |
 ├── examples/
 |   ├── oil_temp-fan and torque state.md
@@ -563,6 +568,10 @@ Embedded-Control-Architecture/
 ├── utility/
 |   ├── hysteresis.h
 |   └── increment_timer.h
+|
+├── .github/
+|   └── workflows
+|       └── mingw-tests.yml (for automated test online)
 |
 ├── tests/
 |   ├── module/
@@ -630,6 +639,14 @@ Embedded-Control-Architecture/
 |           └── utility/
 |               ├── lookup_table_1d.h
 |               └── increment_timer.h
+|
+├── hardware/
+|   └── engine_overheat_protection/
+|       ├── engine_overheat_protection.kicad_pcb
+|       ├── engine_overheat_protection.kicad_prl
+|       ├── engine_overheat_protection.kicad_pro
+|       └── engine_overheat_protection.kicad_sch
+|
 ├── .gitignore
 ├── CMakeLists.txt
 ├── README.md
