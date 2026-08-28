@@ -22,10 +22,10 @@ jobs:
         run: ./execution/eop/engine_overheat_protection_Arduino_assert_based_test.exe
 
       - name: Configure utilities tests
-      - run: cmake -S ./tests/unit -B ./execution/utilities -G "MinGW Makefiles"
+        run: cmake -S ./tests/unit -B ./execution/utilities -G "MinGW Makefiles"
 
       - name: Build utilities tests
-      - run: cmake --build ./execution/utilities
+        run: cmake --build ./execution/utilities
 
       - name: Run utilities tests
-      - run: ctest --test-dir ./execution/utilities --output-on-failure
+        run: ctest --test-dir ./execution/utilities --output-on-failure
