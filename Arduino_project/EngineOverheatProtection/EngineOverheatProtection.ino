@@ -19,6 +19,7 @@ constexpr uint8_t CLEAR_FAULT_REQUEST_INPUT_PIN = 3;
 constexpr uint8_t ENGINE_OVERHEAT_PROTECTION_OUTPUT_PIN = 4;
 constexpr uint8_t FAN_REQUEST_OUTPUT_PIN = 5;
 constexpr uint8_t TORQUE_LIMIT_OUTPUT_PIN = 6;
+constexpr uint8_t FAULT_OUTPUT_PIN = 7;
 
 framework::Manager manager;
 
@@ -82,6 +83,7 @@ void setup() {
     pinMode(ENGINE_OVERHEAT_PROTECTION_OUTPUT_PIN, OUTPUT);
     pinMode(FAN_REQUEST_OUTPUT_PIN, OUTPUT);
     pinMode(TORQUE_LIMIT_OUTPUT_PIN, OUTPUT);
+    pinMode(FAULT_OUTPUT_PIN, OUTPUT);
 
     Serial.println("Engine overheat protection module demo starts.");
 }
@@ -109,7 +111,15 @@ void loop() {
     analogWrite(FAN_REQUEST_OUTPUT_PIN, fan_request_PWM_value);
 
     const uint8_t torque_limit_PWM_value = PercentToPWM(engine_overheat_protection_module.TorqueLimitRef().GetValue());
-    analogWrite(TORQUE_LIMIT_OUTPUT_PIN, torque_limit_PWM_value);
+
+    if (engine_overheat_protection_module.StateRef() == engine_overheat_protection::EngineOverheatProtectionState::STOP) {
+        analogWrite(TORQUE_LIMIT_OUTPUT_PIN, 0);
+    } else {
+        analogWrite(TORQUE_LIMIT_OUTPUT_PIN, torque_limit_PWM_value);
+    }
+
+    const bool is_fault_state = IsFaultState(engine_overheat_protection_module.StateRef());
+    digitalWrite(FAULT_OUTPUT_PIN, is_fault_state? HIGH : LOW);
 
     Serial.print("oil temp: ");
     Serial.print(oil_temp_value);
@@ -152,6 +162,13 @@ uint8_t PercentToPWM(uint8_t percentage) {
     }
 
     return static_cast<uint8_t>(percentage * 255.0f / 100.0f);
+}
+
+bool IsFaultState(engine_overheat_protection::EngineOverheatProtectionState state) {
+    if (state == engine_overheat_protection::EngineOverheatProtectionState::FAULT) {
+        return true;
+    }
+    return false;
 }
 
 const char* StateToStr(engine_overheat_protection::EngineOverheatProtectionState raw_state) {
