@@ -129,10 +129,6 @@ A typical module:
 
 ---
 
-
-
----
-
 ## Utility Layer
 
 The `utility` layer contains reusable helper algorithms and timing components.
@@ -604,7 +600,7 @@ stateDiagram-v2
         oil temperature > low threshold
         (*trigger: oil_temp >= high threshold)
     end note
-    AFTER_RUN_COOLING --> oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
+    AFTER_RUN_COOLING --> FAULT: oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
     AFTER_RUN_COOLING --> STOP: oil temperature <= low threshold
     AFTER_RUN_COOLING --> COUNTING: Engine is running (&& **oil temperature >= high threshold**)
 
