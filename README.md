@@ -24,8 +24,9 @@ The current highlight is the **Engine Overheat Protection** demo. It uses a stat
 - Hysteresis-based oil temperature warning
 - State-machine-based engine overheat protection
 - Fault reason handling and clear-fault request input
-- Reusable utility components such as hysteresis, increment timer, and lookup table
+- Reusable utility components such as hysteresis, increment timer, and 1d-lookup table
 - Separate PC and Arduino integration layers
+- GitHub Actions workflow for MinGW based C++ testing
 
 ---
 
@@ -628,7 +629,7 @@ stateDiagram-v2
 - Fault reason preservation while the module remains in the fault state
 - Clear-fault-request based recovery for clearable faults when recovery conditions are met
 
-### #Hardware Schematic
+### Hardware Schematic
 
 The hardware schematic for the Engine Overheat Protection Demo was created using KiCad.
 
