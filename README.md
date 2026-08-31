@@ -44,128 +44,23 @@ The main goals of this project are:
 
 ---
 
-## Highlight: Engine Overheat Protection Demo
 
-The `EngineOverheatProtection` module monitors the engine-running state and hydraulic oil temperature. It activates overheat protection when the oil temperature remains above a configured high threshold for a configured duration.
-
-This demo validates the same reusable C++ control logic in two environments:
-
-1. **PC test environment**
-   - Inputs are simulated by test code.
-   - Outputs are checked by print-based or assert-based tests.
-
-2. **Arduino UNO hardware environment**
-   - Oil temperature is simulated by a potentiometer.
-   - Engine-running status is simulated by a push button.
-   - Fault clearing is simulated by another push button.
-   - Current state, fault reason, and output requests are printed through the serial monitor.
-
-### Inputs
-
-- Oil temperature signal
-- Engine running signal
-- Clear fault request signal
-
-### Outputs
-
-- Overheat protection status
-- Torque limit request
-- Fan request
-- Current state
-- Fault reason
-
-### Demonstrated Behaviors
-
-- Normal stopped state
-- Idle state when the engine is running
-- Timer-based transition from high temperature to protected state
-- After-run cooling behavior after the engine stops
-- Fault transition when input signals are invalid or temperature is outside the expected range
-- Fault reason preservation
-- Clear-fault-request based recovery for clearable faults
-
----
-
-## Demo Video
-
-A short Arduino hardware demo video can be added here.
-
-Recommended path:
-
-```text
-docs/videos/engine_overheat_protection_demo.mp4
-```
-
-Recommended README format:
-
-```md
-[![Watch the demo](docs/images/demo_thumbnail.png)](docs/videos/engine_overheat_protection_demo.mp4)
-```
-
----
-
-## Hardware Schematic
-
-The hardware schematic for the Engine Overheat Protection Demo was created using KiCad.
-
-![Engine Overheat Protection Schematic](docs/images/engine_overheat_protection_schematic.svg)
-
-### Hardware Inputs
-
-```text
-Potentiometer outer pin  -> Arduino 5V
-Potentiometer middle pin -> Arduino A0
-Potentiometer outer pin  -> Arduino GND
-
-Engine running button:
-Arduino D2 -> latching switch -> GND
-Use INPUT_PULLUP in software.
-
-Clear fault request button:
-Arduino D3 -> momentary push button -> GND
-Use INPUT_PULLUP in software.
-```
-
-With `INPUT_PULLUP`, the digital input logic is inverted:
-
-```text
-Button released -> HIGH -> false
-Button pressed  -> LOW  -> true
-```
-
-### Hardware Outputs
-
-```text
-Engine overheat protection output:
-Arduino D4 -> buzzer -> GND
-Use OUTPUT in software.
-
-Fan request output:
-Arduino D5 -> 220 ohm resistor -> LED -> GND
-Use OUTPUT (PWM) in software.
-
-Torque limit output:
-Arduino D6 -> 220 ohm resistor -> LED -> GND
-Use OUTPUT (PWM) in software.
-```
-
----
 
 ## Architecture Overview
 
 The project is organized into several logical layers.
 
 ```text
-Application Layer
+Application Layer (framework: manager, module_interface)
     |
     v
-Signals
+Signals (signal)
     |
     v
-Modules
+Modules (engine_overheat_protection, etc)
     |
     v
-Utility Components
+Utility Components (hysteresis, increment_timer, etc)
 
 Framework Manager runs registered modules periodically.
 ```
@@ -234,129 +129,7 @@ A typical module:
 
 ---
 
-## Engine Overheat Protection State Machine
 
-### State Definitions
-
-- `STOP`
-  - Engine is stopped.
-  - Oil temperature is expected to be within a normal stopped condition.
-  - Unexpected high oil temperature in this state is treated as a fault in this demo.
-
-- `IDLE`
-  - Engine is running.
-  - Oil temperature is below the high threshold.
-
-- `COUNTING`
-  - Engine is running.
-  - Oil temperature is at or above the high threshold.
-  - The increment timer is counting before entering protection.
-
-- `PROTECTED`
-  - Engine is running.
-  - Overheat protection is active.
-
-- `AFTER_RUN_COOLING`
-  - Engine has stopped after high temperature was detected.
-  - Cooling behavior continues until oil temperature falls below the low threshold.
-
-- `FAULT`
-  - A fault condition has been detected.
-  - The original fault reason is preserved until the fault is cleared.
-
-### Fault Reasons
-
-Example fault reasons include:
-
-- `NONE`
-- `OIL_TEMP_SIGNAL_INVALID`
-- `ENGINE_RUNNING_SIGNAL_INVALID`
-- `TEMP_OUT_OF_RANGE_LOW`
-- `TEMP_OUT_OF_RANGE_HIGH`
-- `UNEXPECTED_HIGH_TEMP_IN_STOP`
-- `TEMP_RISE_TOO_FAST`
-- `LOOKUP_TABLE_ERROR`
-
-### Fault Priority
-
-The module checks signal validity and fault conditions before using input values for normal state transitions.
-
-Example priority:
-
-```text
-OIL_TEMP_SIGNAL_INVALID
-> ENGINE_RUNNING_SIGNAL_INVALID
-> UNEXPECTED_HIGH_TEMP_IN_STOP
-> TEMP_OUT_OF_RANGE_HIGH
-> TEMP_OUT_OF_RANGE_LOW
-```
-
-Once an input signal is invalid, its value should not be used to determine normal state transitions.
-
-### State Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> STOP
-
-    note right of STOP
-        engine is stopped
-        oil_temp < high threshold
-        (trigger: oil_temp <= low threshold)
-    end note
-    STOP --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || UNEXPECTED_HIGH_TEMP_IN_STOP || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
-    STOP --> IDLE: Engine is running
-
-    note right of IDLE
-        engine is runnig
-        oil_temp < high threshold
-        (trigger: oil_temp <= low threshold)
-    end note
-    IDLE --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
-    IDLE --> COUNTING: oil temperature >= high threshold
-    IDLE --> STOP: engine is stopped (&& oil **temperature <= low threshold**)
-
-    note right of COUNTING
-        engine is runnig
-        oil temperature > low threshold
-        (trigger: oil temperature >= high threshold)
-        increment timer < 3
-    end note
-    COUNTING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_LOW || TEMP_OUT_OF_RANGE_HIGH
-    COUNTING --> PROTECTED: increment timer >= 3 (&& **oil temperature >= high threshold**)
-    COUNTING --> IDLE: oil temperature <= low threshold
-    COUNTING --> AFTER_RUN_COOLING: engine is stopped (&& **oil temperature >= high threshold**)
-
-    note right of PROTECTED
-        engine is runnig
-        oil temperature > low threshold
-        (trigger: oil_temp >= high threshold)
-    end note
-    PROTECTED --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
-    PROTECTED --> IDLE: oil temperature <= low threshold
-    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped (&& **oil temperature >= high threshold**)
-
-    note right of AFTER_RUN_COOLING
-        engine is stopped
-        oil temperature > low threshold
-        (*trigger: oil_temp >= high threshold)
-    end note
-    AFTER_RUN_COOLING --> FAULT: OIL_TEMP_SIGNAL_INVALID || ENGINE_RUNNING_SIGNAL_INVALID || TEMP_OUT_OF_RANGE_HIGH || TEMP_OUT_OF_RANGE_LOW
-    AFTER_RUN_COOLING --> STOP: oil temperature <= low threshold
-    AFTER_RUN_COOLING --> COUNTING: Engine is running (&& **oil temperature >= high threshold**)
-
-    note right of FAULT
-        is_clearable_fault:
-            NONE,
-            OIL_TEMP_SIGNAL_INVALID,
-            ENGINE_RUNNING_SIGNAL_INVALID,
-            UNEXPECTED_HIGH_TEMP_IN_STOP,
-            TEMP_OUT_OF_RANGE_HIGH,
-            TEMP_OUT_OF_RANGE_LOW
-            
-    end note
-    FAULT --> STOP: can_clear_fault_conditions && is_clearable_fault
-```
 
 ---
 
@@ -463,7 +236,11 @@ ADC 1023 -> 130 °C
 
 The `tests` folder contains PC-based test programs separated into unit tests and module tests.
 
-These tests are used to:
+### Tools
+
+MinGW Makefiles + CMake + g++.exe + Git Bash for Linux on Windows or MSVC + CMake + cl.exe + powerShell for VS on Window.
+
+### Purpose
 
 - verify module logic
 - check signal behavior
@@ -475,17 +252,18 @@ These tests are used to:
 From the project root:
 
 ```bash
-cmake -S tests/module/engine_overheat_protection -B build/tests/module/engine_overheat_protection
-cmake --build build/tests/module/engine_overheat_protection
-```
-
-For Visual Studio generators on Windows, specify the configuration:
-
-```bash
+MinGW Makefiles + Git Bash
+cmake -S tests/module/engine_overheat_protection -B build/tests/module/engine_overheat_protection -G "MinGW Makefiles"
 cmake --build build/tests/module/engine_overheat_protection --config Debug
 ```
 
-To run CTest:
+```bash
+MSVC + PowerShell
+cmake -S tests/module/engine_overheat_protection -B build/tests/module/engine_overheat_protection/build -G "Visual Studio 17 2022" -A x64
+cmake --build build/tests/module/engine_overheat_protection/build --config Debug
+```
+
+To run CTest (common):
 
 ```bash
 ctest --test-dir build/tests/unit -C Debug --output-on-failure
@@ -498,6 +276,36 @@ Notes:
 - Assertion-based tests should usually be run in Debug mode.
 
 ---
+
+## GitHub Actions
+
+This project includes GitHub Actions for automated MinGW-based C++ testing.
+
+The workflow file is located at:
+
+```text
+.github/workflows/mingw-tests.yml
+```
+
+It is triggered automatically on each push and pull request.
+
+The workflow currently runs on a Windows runner and performs the following steps:
+
+- Checkout the repository
+- Configure the module test with CMake
+- Build and run the test
+- Configure the utility unit test with CMake
+- Build and run the unit tests with CTest
+
+The automated tests currently cover:
+
+- EngineOverheatProtectionArduino
+- Hysteresis
+- IncrementTimer
+- LookupTable1d
+
+The CI status is displayed at the top of README by the badge, it helps confirm core C++ logic still builds and passes after each update. 
+
 
 ## Project Structure
 
@@ -657,6 +465,231 @@ Embedded-Control-Architecture/
 
 ---
 
+## Arduino Demo Highlight Description: 
+
+### Engine Overheat Protection Arduino
+
+The `EngineOverheatProtection` module monitors the engine-running state and hydraulic oil temperature. It activates overheat protection when the oil temperature remains above a configured high threshold for a configured duration.
+
+This demo validates the same reusable C++ control logic in two environments:
+
+1. **PC test environment**
+   - Inputs are simulated by test code.
+   - Outputs are checked by print-based or assert-based tests.
+
+2. **Arduino UNO hardware environment**
+   - Oil temperature is simulated by a potentiometer.
+   - Engine-running status is simulated by a push button.
+   - Fault clearing is simulated by another push button.
+   - Current state, fault reason, and output requests are printed through the serial monitor.
+
+#### Inputs
+
+- Oil temperature signal
+- Engine running signal
+- Clear fault request signal
+
+#### Outputs
+
+- Overheat protection status
+- Torque limit request
+- Fan request
+- Current state
+- Fault reason
+
+### Engine Overheat Protection State Machine
+
+#### State Definitions
+
+- `STOP`
+  - Engine is stopped.
+  - Oil temperature is expected to be within a normal stopped condition.
+  - Unexpected high oil temperature in this state is treated as a fault in this demo.
+
+- `IDLE`
+  - Engine is running.
+  - Oil temperature is below the high threshold.
+
+- `COUNTING`
+  - Engine is running.
+  - Oil temperature is at or above the high threshold.
+  - The increment timer is counting before entering protection.
+
+- `PROTECTED`
+  - Engine is running.
+  - Overheat protection is active.
+
+- `AFTER_RUN_COOLING`
+  - Engine has stopped after high temperature was detected.
+  - Cooling behavior continues until oil temperature falls below the low threshold.
+
+- `FAULT`
+  - A fault condition has been detected.
+  - The original fault reason is preserved until the fault is cleared.
+
+#### Fault Reasons
+
+Example fault reasons include:
+
+- `NONE` (no fault)
+- `OIL_TEMP_SIGNAL_INVALID`
+- `ENGINE_RUNNING_SIGNAL_INVALID`
+- `TEMP_OUT_OF_RANGE_LOW`
+- `TEMP_OUT_OF_RANGE_HIGH`
+- `UNEXPECTED_HIGH_TEMP_IN_STOP`
+- `TEMP_RISE_TOO_FAST` (not set yet)
+- `LOOKUP_TABLE_ERROR` (not set yet)
+
+#### Fault Priority
+
+The module checks signal validity and fault conditions before using input values for normal state transitions.
+
+Priority:
+
+```text
+In STOP state:
+OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > UNEXPECTED_HIGH_TEMP_IN_STOP > TEMP_OUT_OF_RANGE_LOW
+
+In other states:
+OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > TEMP_OUT_OF_RANGE_LOW
+```
+
+* Once an input signal (oil temp, is engine running, etc) is invalid, its value should not be used to determine normal state transitions.
+
+#### State Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> STOP
+
+    note right of STOP
+        engine is stopped
+        oil_temp < high threshold
+        (trigger: oil_temp <= low threshold)
+    end note
+    STOP --> FAULT: oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_physical_max || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
+    STOP --> IDLE: Engine is running
+
+    note right of IDLE
+        engine is runnig
+        oil_temp < high threshold
+        (trigger: oil_temp <= low threshold)
+    end note
+    IDLE --> FAULT: oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
+    IDLE --> COUNTING: oil temperature >= high threshold
+    IDLE --> STOP: engine is stopped (&& oil **temperature <= low threshold**)
+
+    note right of COUNTING
+        engine is runnig
+        oil temperature > low threshold
+        (trigger: oil temperature >= high threshold)
+        increment timer < 3
+    end note
+    COUNTING --> FAULT: oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
+    COUNTING --> PROTECTED: increment timer >= 3 (&& **oil temperature >= high threshold**)
+    COUNTING --> IDLE: oil temperature <= low threshold
+    COUNTING --> AFTER_RUN_COOLING: engine is stopped (&& **oil temperature >= high threshold**)
+
+    note right of PROTECTED
+        engine is runnig
+        oil temperature > low threshold
+        (trigger: oil_temp >= high threshold)
+    end note
+    PROTECTED --> FAULT: oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
+    PROTECTED --> IDLE: oil temperature <= low threshold
+    PROTECTED --> AFTER_RUN_COOLING: Engine is stopped (&& **oil temperature >= high threshold**)
+
+    note right of AFTER_RUN_COOLING
+        engine is stopped
+        oil temperature > low threshold
+        (*trigger: oil_temp >= high threshold)
+    end note
+    AFTER_RUN_COOLING --> oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
+    AFTER_RUN_COOLING --> STOP: oil temperature <= low threshold
+    AFTER_RUN_COOLING --> COUNTING: Engine is running (&& **oil temperature >= high threshold**)
+
+    note right of FAULT
+        is_clearable_fault:
+            OIL_TEMP_SIGNAL_INVALID,
+            ENGINE_RUNNING_SIGNAL_INVALID,
+            UNEXPECTED_HIGH_TEMP_IN_STOP,
+            TEMP_OUT_OF_RANGE_HIGH,
+            TEMP_OUT_OF_RANGE_LOW
+        is_not_clearable_fault:
+
+    end note
+    FAULT --> STOP: is_clearable_fault && oil temp is set between 15°C and 80°C && engine is not running && can_clear_fault_conditions (clear fault request)
+```
+
+### Demonstrated Behaviors
+
+- Normal stopped state when the engine is not running
+- Idle state when the engine is running and oil temperature is normal
+- Timer-based transition from high oil temperature to protected state
+- After-run cooling behavior after the engine stops while oil temperature is still high
+- Fault transition when input signals are invalid or temperature is outside the expected range
+- Fault transition for unexpected high oil temperature in the stopped state
+- Fault reason preservation while the module remains in the fault state
+- Clear-fault-request based recovery for clearable faults when recovery conditions are met
+
+### #Hardware Schematic
+
+The hardware schematic for the Engine Overheat Protection Demo was created using KiCad.
+
+![Engine Overheat Protection Schematic](docs/images/engine_overheat_protection_schematic.svg)
+
+##### Hardware Inputs
+
+```text
+Potentiometer outer pin  -> Arduino 5V
+Potentiometer middle pin -> Arduino A0
+Potentiometer outer pin  -> Arduino GND
+
+Engine running button:
+Arduino D2 -> latching switch -> GND
+Use INPUT_PULLUP in software.
+
+Clear fault request button:
+Arduino D3 -> momentary push button -> GND
+Use INPUT_PULLUP in software.
+```
+
+With `INPUT_PULLUP`, the digital input logic is inverted:
+
+```text
+Button released -> HIGH -> false
+Button pressed  -> LOW  -> true
+```
+
+##### Hardware Outputs
+
+```text
+Engine overheat protection output (while engine is running):
+Arduino D4 -> buzzer -> GND
+Use OUTPUT in software.
+
+Fan request output:
+Arduino D5 -> 220 ohm resistor -> LED (green) -> GND
+Use OUTPUT (PWM) in software.
+
+Torque limit output:
+Arduino D6 -> 220 ohm resistor -> LED (blue) -> GND
+Use OUTPUT (PWM) in software.
+
+Fault output:
+Arduino D7 -> 220 ohm resistor -> LED (red) -> GND
+Use OUTPUT in software.
+```
+
+##### Demo Video
+
+A short Arduino hardware demo video can be added here.
+
+```md
+[![Watch the demo](docs/images/demo_thumbnail.png)](docs/videos/engine_overheat_protection_demo.mp4)
+```
+---
+
 ## Troubleshooting Notes
 
 Common issues encountered during Arduino integration:
@@ -684,26 +717,40 @@ For more details:
 
 Completed:
 
+### Software Architecture
 - Basic module interface
-- Manager-based module registration
+- Manager-based module registration and execution
 - Shared typed signals
 - Signal validity handling
-- Hysteresis-based oil temperature warning demo
-- State-machine-based engine overheat protection module
+- Reusable utility components, include hysteresis, increment timer and lookup table
+
+### Control Logic
+- Hysteresis-based oil temperature warning logic
+- State-machine-based engine overheat protection logic
+- Timer based transition to protected state
 - Fault state and fault reason handling
 - Clear fault request input
-- Motor/fan output experiment
+
+### Test
 - PC manual tests
 - PC assert-based tests
-- Arduino UNO application structure
-- Added automated tests for Arduino-compatible code and utility
 - Automated unit tests for reusable utility components
+- Arduino-compatiable assert test for Engine Overheat Protection
+- GitHub Actions workflow for automated MinGW C++ tests
 - Improved CMake organization
 
-- Analog-input temperature simulation
-- Arduino UNO hardware test for Engine Overheat Protection
-- Added LED and PWM outputs for fan request and torque limit demonstration
-- Added a buzzer warning output
+### Hardware
+- Arduino UNO application structure
+- Analog-input temperature simulation using a potentiometer
+- Latching switch input for engine running
+- Push-button input for clear fault request
+- Buzzer output for overheat protected warning while engine is running
+- PWM LED outputs for fan request and torque limit demonstration
+- LED output for fault state indication
+
+### Documentation and Demo
+- Drew an Arduino circuit schematic
+- Added the circuit schematic to the README
 
 ---
 
@@ -711,13 +758,23 @@ Completed:
 
 Possible future improvements include:
 
+### Software Architecture
+- Separate platform-independent utilities from Arduino-specific application logic more clearly
+
+### Control Logic
+
+### Test
+- Add Arduino compile checks to GitHub Actions
+
+### Hardware
 - Add input filtering for noisy analog signals
-- Add a short demo video
 - Add an LCD temperature display
 - Add CAN-style signal simulation
 - Add real temperature sensor support
-- Separate platform-independent utilities from Arduino-specific application logic more clearly
+
+### Documentation and Demo
 - Improve documentation for each module
+- Add a short Arduino hardware demo video
 
 ---
 
