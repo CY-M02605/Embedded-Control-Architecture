@@ -688,19 +688,22 @@ Completed:
 - Manager-based module registration
 - Shared typed signals
 - Signal validity handling
-- PC manual tests
-- PC assert-based tests
-- Arduino UNO application structure
-- Analog-input temperature simulation
 - Hysteresis-based oil temperature warning demo
-- Motor/fan output experiment
 - State-machine-based engine overheat protection module
 - Fault state and fault reason handling
 - Clear fault request input
-- Arduino UNO hardware test for Engine Overheat Protection
-- Improved CMake organization
-- Automated unit tests for reusable utility components
+- Motor/fan output experiment
+- PC manual tests
+- PC assert-based tests
+- Arduino UNO application structure
 - Added automated tests for Arduino-compatible code and utility
+- Automated unit tests for reusable utility components
+- Improved CMake organization
+
+- Analog-input temperature simulation
+- Arduino UNO hardware test for Engine Overheat Protection
+- Added LED and PWM outputs for fan request and torque limit demonstration
+- Added a buzzer warning output
 
 ---
 
@@ -709,13 +712,10 @@ Completed:
 Possible future improvements include:
 
 - Add input filtering for noisy analog signals
-- Add LED or PWM outputs for fan request and torque limit demonstration
 - Add a short demo video
-- Add a buzzer warning output
 - Add an LCD temperature display
 - Add CAN-style signal simulation
 - Add real temperature sensor support
-- 
 - Separate platform-independent utilities from Arduino-specific application logic more clearly
 - Improve documentation for each module
 
