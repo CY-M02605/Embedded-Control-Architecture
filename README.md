@@ -185,6 +185,8 @@ This demo uses:
 - push button input for clear fault request
 - serial monitor output for state, fault reason, torque limit, fan request, and protection status
 
+See [EngineOverheatProtection Module Notes](docs/modules/engine_overheat_protection_Arduino.md)
+
 ---
 
 ## Arduino Data Flow
