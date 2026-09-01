@@ -319,6 +319,8 @@ Embedded-Control-Architecture/
 ├── docs/
 |   ├── images/
 |   |   └── engine_overheat_protection_schematic.svg
+|   ├── docs/
+|   |   └── engine_overheat_protection_Arduino.md
 |   ├── CIRCUIT_NOTES.md
 |   ├── GIT_OPERATION_MANUAL.md
 |   ├── LINUX_NOTES.md
