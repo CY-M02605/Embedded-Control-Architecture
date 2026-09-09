@@ -18,28 +18,36 @@ public:
     explicit RateOfChangeChecker(Config config)
         : config_(config), 
         has_previous_value_(false),
-        previous_value_(0.0f) {}
+        previous_value_(0.0f),
+        rate_of_change_(0.0f) {}
 
     bool CheckRateOfChange(float current_value, float timer_interval) {
 
         if (timer_interval <= 0) {
             previous_value_ = current_value;
+            rate_of_change_ = 0.0f;
             return false;
         }
 
         if (!has_previous_value_) {
             previous_value_ = current_value;
             has_previous_value_ = true;
+            rate_of_change_ = 0.0f;
             return false;
         }
 
-        const float rate_of_change_ = (current_value - previous_value_) / timer_interval;
+        rate_of_change_ = (current_value - previous_value_) / timer_interval;
         previous_value_ = current_value;
+
         if (rate_of_change_ >= config_.max_rate_of_change) {
             return true;
         } else {
             return false;
         }
+    }
+
+    float GetCurrentRate() const {
+        return rate_of_change_;
     }
 
     void Reset() {
@@ -51,6 +59,7 @@ private:
     const Config config_;
     float previous_value_;
     bool has_previous_value_;
+    float rate_of_change_;
 };
 }
 
