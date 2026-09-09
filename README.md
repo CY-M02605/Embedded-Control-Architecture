@@ -376,7 +376,10 @@ Embedded-Control-Architecture/
 |
 ├── utility/
 |   ├── hysteresis.h
-|   └── increment_timer.h
+|   ├── increment_timer_for_arduino_prohect.h
+|   ├── increment_timer.h
+|   ├── lookup_table_1d.h
+|   └── rate_of_change_checker.h
 |
 ├── .github/
 |   └── workflows
@@ -538,7 +541,7 @@ Example fault reasons include:
 - `TEMP_OUT_OF_RANGE_LOW`
 - `TEMP_OUT_OF_RANGE_HIGH`
 - `UNEXPECTED_HIGH_TEMP_IN_STOP`
-- `TEMP_RISE_TOO_FAST` (not set yet)
+- `TEMP_RISE_TOO_FAST`
 - `LOOKUP_TABLE_ERROR` (not set yet)
 
 #### Fault Priority
@@ -549,13 +552,31 @@ Priority:
 
 ```text
 In STOP state:
-OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > UNEXPECTED_HIGH_TEMP_IN_STOP > TEMP_OUT_OF_RANGE_LOW
+OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > UNEXPECTED_HIGH_TEMP_IN_STOP > TEMP_OUT_OF_RANGE_LOW 
 
-In other states:
-OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > TEMP_OUT_OF_RANGE_LOW
+In other states with engine running:
+OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > TEMP_RISE_TOO_FAST > TEMP_OUT_OF_RANGE_LOW
+
+In other states without engine running:
+OIL_TEMP_SIGNAL_INVALID > ENGINE_RUNNING_SIGNAL_INVALID > TEMP_OUT_OF_RANGE_HIGH > TEMP_RISE_TOO_FAST > TEMP_OUT_OF_RANGE_LOW
 ```
 
 * Once an input signal (oil temp, is engine running, etc) is invalid, its value should not be used to determine normal state transitions.
+
+* TEMP_RISE_TOO_FAST is treated as a clearable but latched fault.
+
+    Recovery requires:
+    - valid oil temperature signal
+    - valid engine running signal
+    - oil temperature within physical range
+    - engine stopped
+    - clear fault request active
+
+    After recovery:
+    - fault_reason is reset to NONE
+    - state returns to STOP
+    - rate-of-change checker is reset
+    - protection timer is cleared
 
 #### State Diagram
 
@@ -603,7 +624,7 @@ stateDiagram-v2
     note right of AFTER_RUN_COOLING
         engine is stopped
         oil temperature > low threshold
-        (*trigger: oil_temp >= high threshold)
+        (**trigger: oil_temp >= high threshold)
     end note
     AFTER_RUN_COOLING --> FAULT: oil temp signal is invalid || engine running signal is invalid || oil temp is higher than oil_temp_high_threshold || oil temp is lower than oil_temp_physical_min
     AFTER_RUN_COOLING --> STOP: oil temperature <= low threshold
@@ -615,12 +636,15 @@ stateDiagram-v2
             ENGINE_RUNNING_SIGNAL_INVALID,
             UNEXPECTED_HIGH_TEMP_IN_STOP,
             TEMP_OUT_OF_RANGE_HIGH,
-            TEMP_OUT_OF_RANGE_LOW
+            TEMP_OUT_OF_RANGE_LOW,
+            TEMP_RISE_TOO_FAST
         is_not_clearable_fault:
 
     end note
-    FAULT --> STOP: is_clearable_fault && oil temp is set between 15°C and 80°C && engine is not running && can_clear_fault_conditions (clear fault request)
+    FAULT --> STOP: except (**TEMP_RISE_TOO_FAST): is_clearable_fault_for_first_level && oil temp is set between oil_low_threshold and oil_temp_low_fault_recover_critical_value && engine is not running && can_clear_fault_conditions (clear fault request), in (**TEMP_RISE_TOO_FAST): is_clearable_fault_for_second_level &&  && oil temp is set between oil_temp_physical_min and oil_temp_physical_max && engine is not running && can_clear_fault_conditions (clear fault request) 
 ```
+
+
 
 ### Demonstrated Behaviors
 
