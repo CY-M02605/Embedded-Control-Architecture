@@ -25,7 +25,18 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/modules/gear_display_facade/include",
+                "${workspaceFolder}/modules/hydraulic_oil_warning/include",
+                "${workspaceFolder}/modules/instantiation_practice/include",
+                "${workspaceFolder}/modules/cooling_fan_control/include",
+                "${workspaceFolder}/modules/vehicle_speed_control/include",
+                "${workspaceFolder}/modules/engine_overheat_protection/include",
+                "${workspaceFolder}/Arduino_project/OilTempWarningDemo/src",
+                "${workspaceFolder}/framework",
+                "${workspaceFolder}/signals",
+                "${workspaceFolder}/assembly",
+                "${workspaceFolder}/utility"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
